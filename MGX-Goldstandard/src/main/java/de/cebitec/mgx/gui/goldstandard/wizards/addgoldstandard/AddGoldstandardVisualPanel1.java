@@ -5,11 +5,15 @@ import de.cebitec.mgx.gui.swingutils.util.SuffixFilter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.Serial;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import org.openide.util.NbPreferences;
 
 public final class AddGoldstandardVisualPanel1 extends JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public static final String PROP_MGSFILE = "mgsfile";
     private File file = null;

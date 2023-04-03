@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.wizard.analysis.misc;
 import de.cebitec.mgx.api.model.JobParameterI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serial;
 import java.util.Collection;
 
 /**
@@ -11,6 +12,9 @@ import java.util.Collection;
  */
 public class ComboBoxPanel extends ValueHolderI implements ActionListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     /**
      * Creates new form ComboBoxPanel
      */

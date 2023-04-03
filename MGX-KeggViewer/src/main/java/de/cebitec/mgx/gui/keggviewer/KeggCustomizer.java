@@ -13,6 +13,7 @@ import de.cebitec.mgx.kegg.pathways.api.PathwayI;
 import de.cebitec.mgx.kegg.pathways.model.ECNumberFactory;
 import java.awt.Cursor;
 import java.awt.EventQueue;
+import java.io.Serial;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -28,13 +29,16 @@ import org.openide.util.RequestProcessor;
  */
 public class KeggCustomizer extends javax.swing.JPanel {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     /**
      * Creates new form KeggCustomizer
      */
     public KeggCustomizer() {
         initComponents();
     }
-    
+
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);

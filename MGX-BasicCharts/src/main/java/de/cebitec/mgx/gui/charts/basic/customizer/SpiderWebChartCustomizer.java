@@ -8,6 +8,7 @@ import de.cebitec.mgx.gui.vizfilter.SortOrder;
 import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
+import java.io.Serial;
 import java.util.List;
 
 /**
@@ -15,6 +16,9 @@ import java.util.List;
  * @author sjaenick
  */
 public class SpiderWebChartCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI<Long>, DistributionI<Double>> {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private AttributeTypeI at;
 

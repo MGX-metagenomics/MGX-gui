@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.swingutils;
 
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,6 +22,9 @@ import org.openide.util.Exceptions;
  * @author sjaenick
  */
 public class ContigListModel extends BaseModel<ContigI> {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private BinI bin;
 

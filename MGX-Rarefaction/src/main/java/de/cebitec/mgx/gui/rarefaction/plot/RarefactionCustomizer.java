@@ -11,6 +11,7 @@ import de.cebitec.mgx.gui.swingutils.util.FileChooserUtils;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +24,9 @@ import org.openide.NotifyDescriptor;
  * @author sj
  */
 public class RarefactionCustomizer extends javax.swing.JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private Map<String, List<Point>> data = null;
 
@@ -59,10 +63,10 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
         return hideLegend.isSelected();
     }
 
-    boolean percentageView(){
+    boolean percentageView() {
         return percentageView.isSelected();
     }
-    
+
     int getLineThickness() {
         return lineThickness.getValue();
     }
@@ -225,7 +229,7 @@ public class RarefactionCustomizer extends javax.swing.JPanel {
             }
         }
 
-        try (BufferedWriter w = new BufferedWriter(new FileWriter(fname))) {
+        try ( BufferedWriter w = new BufferedWriter(new FileWriter(fname))) {
 
             // write header
             for (int col = 0; col < names.size() - 1; col++) {

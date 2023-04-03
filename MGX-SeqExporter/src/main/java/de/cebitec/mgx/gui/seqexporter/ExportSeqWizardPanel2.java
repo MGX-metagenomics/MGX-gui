@@ -16,16 +16,16 @@ public class ExportSeqWizardPanel2<U> implements WizardDescriptor.Panel<WizardDe
      * The visual component that displays this panel. If you need to access the
      * component from this class, just use getComponent().
      */
-    private ExportSeqVisualPanel2 component;
+    private ExportSeqVisualPanel2<U> component;
 
     // Get the visual component for the panel. In this template, the component
     // is kept separate. This can be more efficient: if the wizard is created
     // but never displayed, or not all panels are displayed, it is better to
     // create only those which really need to be visible.
     @Override
-    public ExportSeqVisualPanel2 getComponent() {
+    public ExportSeqVisualPanel2<U> getComponent() {
         if (component == null) {
-            component = new ExportSeqVisualPanel2();
+            component = new ExportSeqVisualPanel2<>();
         }
         return component;
     }
@@ -60,7 +60,7 @@ public class ExportSeqWizardPanel2<U> implements WizardDescriptor.Panel<WizardDe
     @Override
     public void readSettings(WizardDescriptor wiz) {
         // use wiz.getProperty to retrieve previous panel state
-        ExportSeqVisualPanel2 c = getComponent();
+        ExportSeqVisualPanel2<U> c = getComponent();
         c.addPropertyChangeListener(this);
     }
 

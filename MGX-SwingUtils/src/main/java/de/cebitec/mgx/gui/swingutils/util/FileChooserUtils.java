@@ -56,7 +56,7 @@ public class FileChooserUtils {
                  */
                 try {
                     FileChooserUI ui2 = chooser.getUI();
-                    Class c = ui2.getClass();
+                    Class<?> c = ui2.getClass();
                     Field f = null;
 
                     try {

@@ -12,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,6 +25,9 @@ import org.apache.commons.collections4.CollectionUtils;
  * @author patrick
  */
 public class VennChart extends JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final BufferedImage image;
 
@@ -154,12 +158,12 @@ public class VennChart extends JPanel {
         }
 
         String[] labelArray = new String[]{labelA, labelB, labelC, labelD};
-        for (int i=0; i<labelArray.length; i++) {
+        for (int i = 0; i < labelArray.length; i++) {
             g2d.drawImage(img, 0, 0, null);
             g2d.setPaint(Color.BLACK);
             g2d.setFont(new Font("SansSerif", Font.BOLD, FONTSIZE));
-            g2d.drawString((i+1) + ": " + labelArray[i], LABEL_COORDINATES_4[i].x, LABEL_COORDINATES_4[i].y);
-        }        
+            g2d.drawString((i + 1) + ": " + labelArray[i], LABEL_COORDINATES_4[i].x, LABEL_COORDINATES_4[i].y);
+        }
 
         g2d.dispose();
         return new VennChart(img);

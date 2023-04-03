@@ -16,6 +16,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,9 @@ import org.jfree.chart.ChartColor;
  * @author sjaenick
  */
 public class PlotPanel extends JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final Normalization norm;
     private final Map<GroupI, Long> maxAssignedByGroup;
@@ -107,7 +111,7 @@ public class PlotPanel extends JPanel {
     long getMaxNumElements() {
         return maxNumElements;
     }
-    
+
     long getMaxNumAssigned(GroupI vGrp) {
         return maxAssignedByGroup.get(vGrp);
     }

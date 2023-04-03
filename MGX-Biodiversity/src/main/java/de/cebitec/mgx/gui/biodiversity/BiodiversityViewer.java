@@ -46,7 +46,7 @@ public class BiodiversityViewer extends CategoricalViewerI<Long> implements Cust
     }
 
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return DistributionI.class;
     }
 

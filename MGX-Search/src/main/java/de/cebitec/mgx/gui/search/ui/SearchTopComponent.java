@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -58,6 +59,9 @@ import org.openide.windows.TopComponent;
         preferredID = "SearchTopComponent"
 )
 public final class SearchTopComponent extends TopComponent implements LookupListener, PropertyChangeListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final Lookup.Result<SeqRunI> result;
     private final TermModel termModel = new TermModel();
@@ -140,7 +144,7 @@ public final class SearchTopComponent extends TopComponent implements LookupList
                         obs.add(iter.next());
                     }
                     //Collections.sort(obs, comp);
-                    ov.show(seq, obs.toArray(new ObservationI[]{}), (String) termList.getSelectedValue());
+                    ov.show(seq, obs.toArray(new ObservationI[]{}), termList.getSelectedValue());
                     showSeq.setEnabled(true);
                 }
             }

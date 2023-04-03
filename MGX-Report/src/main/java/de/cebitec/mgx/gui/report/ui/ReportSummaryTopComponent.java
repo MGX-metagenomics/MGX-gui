@@ -30,6 +30,7 @@ import java.awt.Font;
 import java.awt.Image;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,6 +79,9 @@ import org.openide.windows.TopComponent;
     @ActionReference(path = "Menu/Window", position = 550)
 })
 public final class ReportSummaryTopComponent extends TopComponent implements LookupListener, PropertyChangeListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final Lookup.Result<SeqRunI> resultSeqRun;
     private SeqRunI currentSeqRun = null;

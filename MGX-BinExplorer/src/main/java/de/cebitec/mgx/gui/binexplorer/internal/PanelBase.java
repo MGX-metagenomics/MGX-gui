@@ -23,6 +23,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.VolatileImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serial;
 import java.util.Arrays;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
@@ -33,6 +34,9 @@ import org.apache.commons.math3.util.FastMath;
  * @author sj
  */
 public abstract class PanelBase<T extends SequenceViewControllerI> extends JComponent implements PropertyChangeListener, MouseWheelListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     protected final T vc;
     protected volatile int[] bounds;

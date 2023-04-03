@@ -96,7 +96,7 @@ public class SequenceAccess extends MasterHolder implements SequenceAccessI {
     }
 
     @Override
-    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException {
+    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> attrs, SeqWriterI<? extends DNASequenceI> writer, boolean closeWriter) throws MGXException {
         Builder b = AttributeDTOList.newBuilder();
         for (AttributeI a : attrs) {
             b.addAttribute(AttributeDTOFactory.getInstance().toDTO(a));
@@ -113,7 +113,7 @@ public class SequenceAccess extends MasterHolder implements SequenceAccessI {
     }
 
     @Override
-    public void downloadSequencesForAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter) throws MGXException {
+    public void downloadSequencesForAttributes(Set<AttributeI> attrs, SeqWriterI<? extends DNASequenceI> writer, boolean closeWriter) throws MGXException {
         try {
             Builder b = AttributeDTOList.newBuilder();
             for (AttributeI a : attrs) {
@@ -131,7 +131,8 @@ public class SequenceAccess extends MasterHolder implements SequenceAccessI {
     public SequenceI fetch(long id) throws MGXException {
         SequenceDTO dto = null;
         try {
-            dto = getDTOmaster().Sequence().fetch(id);      } catch (MGXClientLoggedOutException mcle) {
+            dto = getDTOmaster().Sequence().fetch(id);      
+        } catch (MGXClientLoggedOutException mcle) {
             throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);

@@ -15,6 +15,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ToolTipManager;
@@ -30,6 +31,9 @@ import org.openide.util.Exceptions;
  */
 public class RecruitmentPanel extends PanelBase<ViewControllerI> {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final static int MIN_MAPPING_WIDTH = 1;
     private final int[] offsets = new int[101];
     private final int topBorder = 0;

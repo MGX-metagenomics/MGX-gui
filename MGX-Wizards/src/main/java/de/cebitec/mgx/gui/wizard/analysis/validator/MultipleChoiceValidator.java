@@ -11,7 +11,7 @@ import java.util.Map.Entry;
  *
  * @author sjaenick
  */
-public class MultipleChoiceValidator<T extends Identifiable> extends ValidatorI {
+public class MultipleChoiceValidator<T extends Identifiable<?>> extends ValidatorI {
 
     private final Map<String, String> choices;
     private String MODE = "CHOICES";

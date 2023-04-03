@@ -6,6 +6,7 @@ import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.rbac.RBAC;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.io.Serial;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
@@ -20,6 +21,9 @@ import org.openide.util.Utilities;
  * @author sjaenick
  */
 public class CreateDirectory extends AbstractAction {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public CreateDirectory() {
         super.putValue(NAME, "Create directory");

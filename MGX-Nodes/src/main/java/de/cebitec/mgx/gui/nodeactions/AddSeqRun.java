@@ -25,6 +25,7 @@ import java.awt.Dialog;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
@@ -42,6 +43,9 @@ import org.openide.util.Utilities;
  * @author sjaenick
  */
 public class AddSeqRun extends AbstractAction {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public AddSeqRun() {
         super.putValue(NAME, "Add sequencing run");

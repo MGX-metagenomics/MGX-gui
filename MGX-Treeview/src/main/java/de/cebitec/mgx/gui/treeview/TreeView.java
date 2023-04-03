@@ -25,6 +25,7 @@ import java.awt.geom.Point2D;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -107,7 +108,7 @@ public class TreeView extends HierarchicalViewerI implements ImageExporterI.Prov
     }
 
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return TreeI.class;
     }
 
@@ -258,15 +259,15 @@ public class TreeView extends HierarchicalViewerI implements ImageExporterI.Prov
                     Graphics2D g2 = (Graphics2D) g;
                     g2.setBackground(Color.WHITE);
                     super.print(g2);
-                    
+
                     setSize(getSize()); // clears offscreen img
                     setDamageRedraw(false);
-                    
+
                     paintDisplay(g2, getSize());
-                    
+
                     setDamageRedraw(true);
                     g2.dispose();
-                    
+
                 } else {
                     super.print(g);
                 }
@@ -518,19 +519,19 @@ public class TreeView extends HierarchicalViewerI implements ImageExporterI.Prov
                 switch (type) {
                     case PNG:
                     case JPEG:
-                        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(fName))) {
-                            if (display.saveImage(os, type.getSuffices()[0].toUpperCase(), 2)) {
-                                return Result.SUCCESS;
-                            }
-                            return Result.ERROR;
+                        try ( OutputStream os = new BufferedOutputStream(new FileOutputStream(fName))) {
+                        if (display.saveImage(os, type.getSuffices()[0].toUpperCase(), 2)) {
+                            return Result.SUCCESS;
                         }
+                        return Result.ERROR;
+                    }
                     case SVG:
-                        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(fName))) {
-                            if (SVGDisplaySaver.saveSVG(display, os, 2)) {
-                                return Result.SUCCESS;
-                            }
-                            return Result.ERROR;
+                        try ( OutputStream os = new BufferedOutputStream(new FileOutputStream(fName))) {
+                        if (SVGDisplaySaver.saveSVG(display, os, 2)) {
+                            return Result.SUCCESS;
                         }
+                        return Result.ERROR;
+                    }
                     default:
                         return Result.ERROR;
                 }
@@ -603,6 +604,9 @@ public class TreeView extends HierarchicalViewerI implements ImageExporterI.Prov
     }
 
     public class OrientAction extends AbstractAction {
+
+        @Serial
+        private static final long serialVersionUID = 1L;
 
         private final int orientation;
 

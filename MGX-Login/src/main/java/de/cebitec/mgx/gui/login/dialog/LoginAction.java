@@ -9,6 +9,7 @@ import de.cebitec.gpms.rest.GPMSClientI;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serial;
 import java.util.Collection;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -37,6 +38,9 @@ import org.openide.util.WeakListeners;
 })
 public class LoginAction extends AbstractAction implements ContextAwareAction, LookupListener, PropertyChangeListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final Lookup.Result<GPMSClientI> result;
     private GPMSClientI curClient = null;
 

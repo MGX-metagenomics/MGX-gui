@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.misc.PrincipalComponent;
 import de.cebitec.mgx.api.misc.PCAResultI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.misc.Point;
+import java.io.Serial;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
@@ -17,6 +18,9 @@ import org.jfree.data.xy.XYSeries;
  * @author sjaenick
  */
 public class PCACustomizer extends javax.swing.JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static final Pair<PrincipalComponent, PrincipalComponent> pc12 = new Pair<>(PrincipalComponent.PC1, PrincipalComponent.PC2);
     private static final Pair<PrincipalComponent, PrincipalComponent> pc23 = new Pair<>(PrincipalComponent.PC2, PrincipalComponent.PC3);

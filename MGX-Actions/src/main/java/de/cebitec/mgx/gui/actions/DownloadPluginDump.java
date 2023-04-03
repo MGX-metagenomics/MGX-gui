@@ -14,6 +14,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.AbstractAction;
@@ -30,6 +31,9 @@ import org.openide.util.Utilities;
  */
 public class DownloadPluginDump extends AbstractAction {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public DownloadPluginDump() {
         super.putValue(NAME, "Download Conveyor plugin definition");
     }

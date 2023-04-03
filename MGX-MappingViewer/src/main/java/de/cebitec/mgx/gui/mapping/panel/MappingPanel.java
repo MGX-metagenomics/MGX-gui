@@ -25,6 +25,7 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -44,6 +45,9 @@ import org.openide.util.Exceptions;
  */
 public class MappingPanel extends PanelBase<ViewControllerI> {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final SortedSet<MappedRead2D> coverage = new TreeSet<>();
     private final List<TrackI> tracks = new ArrayList<>();
     private int scrollOffset = 0;

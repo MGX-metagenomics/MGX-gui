@@ -79,7 +79,7 @@ public class PolarChart extends NumericalViewerI<Long> implements ImageExporterI
     }
 
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return DistributionI.class;
     }
 

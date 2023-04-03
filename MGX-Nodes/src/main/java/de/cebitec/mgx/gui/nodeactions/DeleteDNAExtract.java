@@ -14,6 +14,7 @@ import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import java.awt.event.ActionEvent;
+import java.io.Serial;
 import javax.swing.AbstractAction;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -25,6 +26,9 @@ import org.openide.util.Utilities;
  */
 public class DeleteDNAExtract extends AbstractAction {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     public DeleteDNAExtract() {
         super.putValue(NAME, "Delete");
     }
@@ -33,8 +37,8 @@ public class DeleteDNAExtract extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         final DNAExtractI dna = Utilities.actionsGlobalContext().lookup(DNAExtractI.class);
         final MGXMasterI m = dna.getMaster();
-        NotifyDescriptor d = new NotifyDescriptor("Really delete " + dna.getMethod() 
-                + " extract " + dna.getName() + "?", "Delete DNA extract", 
+        NotifyDescriptor d = new NotifyDescriptor("Really delete " + dna.getMethod()
+                + " extract " + dna.getName() + "?", "Delete DNA extract",
                 NotifyDescriptor.YES_NO_OPTION, NotifyDescriptor.QUESTION_MESSAGE, null, null);
         Object ret = DialogDisplayer.getDefault().notify(d);
         if (NotifyDescriptor.YES_OPTION.equals(ret)) {

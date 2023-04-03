@@ -26,6 +26,7 @@ import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.concurrent.ExecutionException;
@@ -41,6 +42,9 @@ import org.openide.util.Exceptions;
  */
 public class NavigationPanel extends PanelBase<ViewControllerI> implements MouseListener, MouseMotionListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final static int CAPTURE_DIST = 3; // px
     private float scaleFactor;
     private int[] previewBounds = null;

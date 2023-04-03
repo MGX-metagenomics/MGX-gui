@@ -5,6 +5,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.awt.datatransfer.DataFlavor;
+import java.io.Serial;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.TransferHandler;
@@ -16,6 +17,9 @@ import org.openide.util.datatransfer.MultiTransferObject;
  * @author patrick
  */
 public class SingleListTransferHandler extends TransferHandler {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public SingleListTransferHandler() {
         super();

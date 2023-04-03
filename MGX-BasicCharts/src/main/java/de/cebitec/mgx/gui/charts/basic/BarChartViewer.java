@@ -146,7 +146,7 @@ public class BarChartViewer extends CategoricalViewerI<Long> implements ImageExp
     }
 
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return DistributionI.class;
     }
 

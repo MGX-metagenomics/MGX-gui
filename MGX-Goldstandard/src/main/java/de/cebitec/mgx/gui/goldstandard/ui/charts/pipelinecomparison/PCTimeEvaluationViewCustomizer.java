@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison.PCTimeEvaluationViewer.StepSize;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serial;
 import javax.swing.DefaultComboBoxModel;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
@@ -14,6 +15,9 @@ import org.openide.util.Lookup;
  */
 public class PCTimeEvaluationViewCustomizer extends javax.swing.JPanel implements PropertyChangeListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     /**
      * Creates new form TableViewCustomizer
      */
@@ -21,7 +25,7 @@ public class PCTimeEvaluationViewCustomizer extends javax.swing.JPanel implement
         initComponents();
         stepSizeBox.setModel(new DefaultComboBoxModel<>(StepSize.values()));
         stepSizeBox.setSelectedIndex(0);
-    }    
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -78,10 +82,11 @@ public class PCTimeEvaluationViewCustomizer extends javax.swing.JPanel implement
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {}
-    
-    public StepSize getCurrentStepSize(){
-        return (StepSize)stepSizeBox.getSelectedItem();
+    public void propertyChange(PropertyChangeEvent evt) {
+    }
+
+    public StepSize getCurrentStepSize() {
+        return (StepSize) stepSizeBox.getSelectedItem();
     }
 
 }

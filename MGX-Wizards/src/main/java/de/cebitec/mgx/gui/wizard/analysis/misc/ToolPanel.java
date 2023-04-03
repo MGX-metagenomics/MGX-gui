@@ -1,6 +1,8 @@
 
 package de.cebitec.mgx.gui.wizard.analysis.misc;
 
+import java.io.Serial;
+
 
 /**
  *
@@ -8,6 +10,9 @@ package de.cebitec.mgx.gui.wizard.analysis.misc;
  */
 public class ToolPanel extends javax.swing.JPanel {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     /**
      * Creates new form ToolPanel
      */

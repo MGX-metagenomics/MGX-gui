@@ -8,6 +8,7 @@ import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
+import java.io.Serial;
 import java.net.Authenticator;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -34,6 +35,9 @@ import org.openide.windows.TopComponent;
         preferredID = "ProjectExplorerTopComponent")
 public final class ProjectExplorerTopComponent extends TopComponent implements ExplorerManager.Provider {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final transient ExplorerManager exmngr = new ExplorerManager();
     private final BeanTreeView btv;
 

@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.EvaluationViewerI;
 import java.awt.Image;
+import java.io.Serial;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -45,6 +46,9 @@ import org.openide.util.lookup.InstanceContent;
     "HINT_EvaluationTopComponent=Tool for a fast evaluation of pipelines"
 })
 public final class EvaluationTopComponent extends TopComponent implements LookupListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final Lookup lookup;
     private final InstanceContent content = new InstanceContent();

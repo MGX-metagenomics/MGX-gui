@@ -11,6 +11,7 @@ import de.cebitec.mgx.gui.rbac.RBAC;
 import de.cebitec.mgx.gui.wizard.habitat.HabitatWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
+import java.io.Serial;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.SwingWorker;
@@ -25,6 +26,9 @@ import org.openide.util.Utilities;
  */
 public class EditHabitat extends AbstractAction {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public EditHabitat() {
         putValue(NAME, "Edit");
     }

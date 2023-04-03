@@ -11,6 +11,7 @@ import de.cebitec.mgx.gui.taskview.TaskManager;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.concurrent.Semaphore;
@@ -26,6 +27,9 @@ import org.openide.util.Utilities;
  */
 public class UploadFile extends AbstractAction {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public UploadFile() {
         super.putValue(NAME, "Upload file(s)");
     }

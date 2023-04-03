@@ -13,6 +13,7 @@ import de.cebitec.mgx.gui.rbac.RBAC;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
+import java.io.Serial;
 import java.util.Collection;
 import javax.swing.Action;
 import static javax.swing.Action.NAME;
@@ -36,6 +37,9 @@ import org.openide.util.actions.NodeAction;
 @ActionRegistration(displayName = "Delete", lazy = false)
 public class DeleteAssembly extends NodeAction implements LookupListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final Lookup context;
     private Lookup.Result<AssemblyI> lkpInfo;
 

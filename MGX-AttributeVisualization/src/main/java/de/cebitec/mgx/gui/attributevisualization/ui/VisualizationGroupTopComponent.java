@@ -18,6 +18,7 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -56,6 +57,9 @@ import org.openide.windows.TopComponent;
     "HINT_VisualizationGroupTopComponent=Group window"
 })
 public final class VisualizationGroupTopComponent extends TopComponent implements ExplorerManager.Provider {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final Node rootNode = new VgMgrNode(VGroupManager.getInstance());
     private final transient ExplorerManager exmngr = new ExplorerManager();
@@ -124,7 +128,7 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
             public void dragEnter(DropTargetDragEvent dtde) {
 
                 Set<String> allGroupNames = new HashSet<>();
-                for (GroupI vg : VGroupManager.getInstance().getAllGroups()) {
+                for (GroupI<?> vg : VGroupManager.getInstance().getAllGroups()) {
                     allGroupNames.add(vg.getName());
                 }
 
@@ -155,7 +159,7 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
             public void drop(DropTargetDropEvent dtde) {
 
                 Set<String> allGroupNames = new HashSet<>();
-                for (GroupI vg : VGroupManager.getInstance().getAllGroups()) {
+                for (GroupI<?> vg : VGroupManager.getInstance().getAllGroups()) {
                     allGroupNames.add(vg.getName());
                 }
 
@@ -273,7 +277,7 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
         Collection<GroupI> groups = VGroupManager.getInstance().getAllGroups();
         p.setProperty("numGroups", String.valueOf(groups.size()));
         int num = 0;
-        for (GroupI vg : groups) {
+        for (GroupI<?> vg : groups) {
             p.setProperty("vGroup" + num + "_active", String.valueOf(vg.isActive()));
         }
     }
@@ -287,5 +291,5 @@ public final class VisualizationGroupTopComponent extends TopComponent implement
     public ExplorerManager getExplorerManager() {
         return exmngr;
     }
-    
+
 }

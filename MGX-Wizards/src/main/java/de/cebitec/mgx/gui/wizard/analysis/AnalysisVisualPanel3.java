@@ -6,6 +6,7 @@ import de.cebitec.mgx.api.model.MGXReferenceI;
 import de.cebitec.mgx.gui.wizard.analysis.misc.ParameterPanel;
 import java.awt.Component;
 import java.io.File;
+import java.io.Serial;
 import java.util.List;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -15,6 +16,9 @@ import javax.swing.border.LineBorder;
 
 public final class AnalysisVisualPanel3 extends JPanel {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final List<MGXReferenceI> references;
 
     /**

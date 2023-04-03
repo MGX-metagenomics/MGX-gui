@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.wizard.mapping;
 
 import de.cebitec.mgx.gui.mapping.MappingCtx;
 import java.awt.Component;
+import java.io.Serial;
 import java.util.Collection;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -19,6 +20,9 @@ import javax.swing.event.ListSelectionListener;
 
 public final class MappingWizardVisualPanel1 extends JPanel implements ListSelectionListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     /**
      * Creates new form MappingWizardVisualPanel1
      */

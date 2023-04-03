@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.search.util;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,6 +23,9 @@ import org.openide.util.Exceptions;
  * @author sjaenick
  */
 public class TermModel extends BaseModel<String> {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private SeqRunI run;
     private String prevTerm = null;

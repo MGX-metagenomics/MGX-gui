@@ -2,6 +2,7 @@
 package de.cebitec.mgx.gui.swingutils;
 
 import de.cebitec.mgx.api.model.AttributeTypeI;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -15,9 +16,11 @@ import javax.swing.event.ListDataEvent;
  */
 class AttrTypeModel extends AbstractListModel<AttributeTypeI> implements ComboBoxModel<AttributeTypeI> {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final List<AttributeTypeI> data = new ArrayList<>();
     private int selectionIdx = -1;
-   
 
     public void setData(final Collection<AttributeTypeI> newData) {
         data.clear();

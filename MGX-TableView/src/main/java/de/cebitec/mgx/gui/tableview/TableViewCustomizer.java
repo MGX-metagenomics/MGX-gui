@@ -13,6 +13,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serial;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +28,9 @@ import org.openide.util.NbPreferences;
  * @author sjaenick
  */
 class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI<Double>, DistributionI<Double>> {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates new form TableViewCustomizer

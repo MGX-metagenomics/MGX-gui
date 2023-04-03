@@ -13,6 +13,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serial;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 
@@ -21,6 +22,9 @@ import org.openide.NotifyDescriptor;
  * @author sj
  */
 public class RadialTreeCustomizer extends javax.swing.JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private TreeI<Long> tree = null;
 
@@ -88,7 +92,7 @@ public class RadialTreeCustomizer extends javax.swing.JPanel {
                     throw new IOException(f.getName() + " already exists.");
                 }
 
-                try (BufferedWriter w = new BufferedWriter(new FileWriter(f))) {
+                try ( BufferedWriter w = new BufferedWriter(new FileWriter(f))) {
                     NewickWriter.toNewick(w, tree, jCheckBox1.isEnabled());
                 }
 

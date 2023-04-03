@@ -7,6 +7,7 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serial;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
@@ -18,6 +19,9 @@ import org.openide.util.Exceptions;
  */
 public class NewToolPanel extends javax.swing.JPanel implements DocumentListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public static final String TOOL_DEFINED = "toolDefined";
 
     /**

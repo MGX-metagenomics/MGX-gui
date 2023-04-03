@@ -13,6 +13,7 @@ import de.cebitec.mgx.gui.swingutils.util.FileChooserUtils;
 import java.awt.event.ActionEvent;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.Serial;
 import javax.swing.AbstractAction;
 import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
@@ -24,6 +25,9 @@ import org.openide.util.Utilities;
  * @author sjaenick
  */
 public class SaveToolXML extends AbstractAction {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public SaveToolXML() {
         putValue(NAME, "Download workflow");

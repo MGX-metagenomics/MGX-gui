@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.wizard.extract;
 
+import java.io.Serial;
 import java.util.List;
 import javax.swing.JComboBox;
 
@@ -14,6 +15,9 @@ import javax.swing.JComboBox;
  */
 public class MetatranscriptomeDetailPanel extends javax.swing.JPanel {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final static String[] treatments = {"none", "Ribo Zero", "other?"};
 
     /** Creates new form MetatranscriptomeDetailPanel */
@@ -26,7 +30,7 @@ public class MetatranscriptomeDetailPanel extends javax.swing.JPanel {
         depletion.setModel(new javax.swing.DefaultComboBoxModel<>(depletionOptions.toArray(new String[0])));
     }
 
-    public JComboBox getDepletion() {
+    public JComboBox<?> getDepletion() {
         return depletion;
     }
     

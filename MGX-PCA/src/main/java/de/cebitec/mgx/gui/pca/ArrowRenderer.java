@@ -5,6 +5,7 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
+import java.io.Serial;
 import org.apache.commons.math3.util.FastMath;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.EntityCollection;
@@ -23,6 +24,9 @@ import org.jfree.data.xy.XYDataset;
  * @author sjaenick
  */
 public class ArrowRenderer extends XYLineAndShapeRenderer {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public ArrowRenderer() {
         super();
@@ -155,7 +159,7 @@ public class ArrowRenderer extends XYLineAndShapeRenderer {
         if (isItemLabelVisible(series, item)) {
             drawItemLabel(g2, orientation, dataset, series, item, xx, yy,
                     (y1 < 0.0));
-        } 
+        }
 
         int domainAxisIndex = plot.getDomainAxisIndex(domainAxis);
         //int rangeAxisIndex = plot.getRangeAxisIndex(rangeAxis);

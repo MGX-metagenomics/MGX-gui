@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.model.SeqRunI;
+import java.io.Serial;
 import java.util.Collection;
 import static javax.swing.Action.NAME;
 import org.openide.awt.ActionID;
@@ -29,12 +30,15 @@ import org.openide.util.actions.NodeAction;
         id = "de.cebitec.mgx.gui.actions.RemoveSeqRunFromGroupAction"
 )
 @ActionRegistration(
-        displayName = "#CTL_RemoveSeqRunFromGroupAction", 
+        displayName = "#CTL_RemoveSeqRunFromGroupAction",
         lazy = false,
         asynchronous = false
 )
 @NbBundle.Messages("CTL_RemoveSeqRunFromGroupAction=RemoveSeqRunFromGroupAction")
 public class RemoveSeqRunFromGroupAction extends NodeAction implements LookupListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final Lookup context;
     private Lookup.Result<SeqRunI> lkpInfo;
@@ -91,7 +95,7 @@ public class RemoveSeqRunFromGroupAction extends NodeAction implements LookupLis
     protected boolean asynchronous() {
         return false;
     }
-    
+
     @Override
     public HelpCtx getHelpCtx() {
         return HelpCtx.DEFAULT_HELP;

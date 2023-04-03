@@ -127,7 +127,7 @@ public class XYPlotViewer extends NumericalViewerI<Long> implements ImageExporte
     }
 
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return DistributionI.class;
     }
 

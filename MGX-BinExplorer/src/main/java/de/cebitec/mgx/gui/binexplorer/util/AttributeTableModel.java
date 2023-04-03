@@ -13,6 +13,7 @@ import de.cebitec.mgx.api.model.assembly.GeneObservationI;
 import de.cebitec.mgx.gui.binexplorer.internal.ContigViewController;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,6 +28,9 @@ import org.openide.util.Exceptions;
  * @author sj
  */
 public class AttributeTableModel extends DefaultTableModel implements PropertyChangeListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final ContigViewController vc;
     private final List<GeneObservationI> gobsList = new ArrayList<>();

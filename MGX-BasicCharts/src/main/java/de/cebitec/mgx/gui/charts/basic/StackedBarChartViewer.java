@@ -154,7 +154,7 @@ public class StackedBarChartViewer extends CategoricalViewerI<Long> implements I
     }
 
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return DistributionI.class;
     }
 

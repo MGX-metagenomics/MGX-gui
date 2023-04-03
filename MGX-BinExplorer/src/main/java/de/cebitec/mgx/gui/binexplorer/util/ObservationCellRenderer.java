@@ -7,12 +7,12 @@ package de.cebitec.mgx.gui.binexplorer.util;
 
 import de.cebitec.mgx.api.model.RegionI;
 import de.cebitec.mgx.api.model.assembly.GeneObservationI;
-import de.cebitec.mgx.gui.binexplorer.BinExplorerTopComponent;
 import de.cebitec.mgx.gui.binexplorer.internal.ContigViewController;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.io.Serial;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -24,6 +24,9 @@ import org.apache.commons.math3.util.FastMath;
  * @author sj
  */
 public class ObservationCellRenderer extends DefaultTableCellRenderer {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final ContigViewController vc;
     private final ObservationDisplay display = new ObservationDisplay();
@@ -53,6 +56,9 @@ public class ObservationCellRenderer extends DefaultTableCellRenderer {
     }
 
     private static class ObservationDisplay extends JPanel {
+
+        @Serial
+        private static final long serialVersionUID = 1L;
 
         private RegionI gene;
         private GeneObservationI observation;

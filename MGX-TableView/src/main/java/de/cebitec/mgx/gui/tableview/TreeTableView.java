@@ -56,7 +56,7 @@ public class TreeTableView extends AbstractViewer<TreeI<Long>> implements ImageE
     }
 
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return TreeI.class;
     }
 

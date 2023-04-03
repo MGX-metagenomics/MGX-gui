@@ -131,7 +131,7 @@ public class AreaChart extends NumericalViewerI<Long> implements CustomizableI, 
     }
 
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return DistributionI.class;
     }
 

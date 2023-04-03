@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.common.JobState;
 import de.cebitec.mgx.gui.rbac.RBAC;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JTextArea;
@@ -28,6 +29,9 @@ import org.openide.util.actions.NodeAction;
 @ActionRegistration(displayName = "Show error", lazy = false)
 @Messages("CTL_ShowError=ShowError")
 public final class ShowError extends NodeAction {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Override
     protected void performAction(Node[] activatedNodes) {

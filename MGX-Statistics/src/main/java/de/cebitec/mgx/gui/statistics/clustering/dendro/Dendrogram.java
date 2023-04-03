@@ -15,6 +15,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.Serial;
 import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -23,15 +24,18 @@ import javax.swing.JFrame;
  *
  * @author sj
  */
-public class Dendrogram extends JComponent  {
+public class Dendrogram extends JComponent {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private SubTreeI tree = null;
 
     public Dendrogram() {
     }
-    
+
     public void showTree(NodeI root, final double xOffset) {
-        
+
         tree = createNode(null, root, xOffset);
         tree.layout();
         repaint();

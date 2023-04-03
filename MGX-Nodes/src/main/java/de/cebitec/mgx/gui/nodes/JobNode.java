@@ -136,7 +136,7 @@ public class JobNode extends MGXNodeBase<JobI> {
         Sheet sheet = Sheet.createDefault();
         Sheet.Set set = Sheet.createPropertiesSet();
 
-        Property toolProperty = new PropertySupport.ReadOnly<String>(TOOL_PROPERTY, String.class, "Tool", "Tool name") {
+        Property<?> toolProperty = new PropertySupport.ReadOnly<String>(TOOL_PROPERTY, String.class, "Tool", "Tool name") {
             @Override
             public String getValue() throws IllegalAccessException, InvocationTargetException {
                 return getContent().getTool().getName();
@@ -145,7 +145,7 @@ public class JobNode extends MGXNodeBase<JobI> {
         toolProperty.setValue("suppressCustomEditor", Boolean.TRUE);
         set.put(toolProperty);
 
-        Property runProperty = new PropertySupport.ReadWrite<String>(SEQRUN_OR_ASSEMBLY_PROPERTY, String.class, "Run", "Run name") {
+        Property<?> runProperty = new PropertySupport.ReadWrite<String>(SEQRUN_OR_ASSEMBLY_PROPERTY, String.class, "Run", "Run name") {
             @Override
             public String getValue() throws IllegalAccessException, InvocationTargetException {
                 if (getContent().getSeqruns() != null && getContent().getSeqruns().length > 0) {
@@ -168,7 +168,7 @@ public class JobNode extends MGXNodeBase<JobI> {
         runProperty.setValue("suppressCustomEditor", Boolean.TRUE);
         set.put(runProperty);
 
-        Property stateProperty = new PropertySupport.ReadWrite<String>(STATE_PROPERTY, String.class, "State", "Job state") {
+        Property<?> stateProperty = new PropertySupport.ReadWrite<String>(STATE_PROPERTY, String.class, "State", "Job state") {
             @Override
             public String getValue() throws IllegalAccessException, InvocationTargetException {
                 JobState state = getContent().getStatus();

@@ -22,6 +22,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeEvent;
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,6 +35,9 @@ import org.apache.commons.math3.util.FastMath;
  * @author sjaenick
  */
 public class FeaturePanel extends PanelBase<ContigViewController> implements MouseListener, MouseMotionListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final static int FRAME_VOFFSET = 20;
     private final static int[] frameOffsets = new int[]{
@@ -196,7 +200,7 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
         String framePrefix = frame > 0 ? "+" : "";
         String toolTip = "<html>"
                 + "<b>Gene: </b>" + vc.getReferenceName() + "_" + r.getId()
-                + "<br><hr><br>" 
+                + "<br><hr><br>"
                 + "Type: " + r.getType().toString() + "<br>"
                 + "Location: " + nf.format(r.getStart()) + "-"
                 + nf.format(r.getStop()) + "<br>"

@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.goldstandard.wizards.selectjobs;
 
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
+import java.io.Serial;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -11,17 +12,20 @@ import javax.swing.event.ListSelectionListener;
 
 public final class SelectJobsVisualPanel1 extends JPanel {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     public static final String PROP_JOBS = "jobs";
-    public static final String PROP_ATTRIBUTETYPE = "attribute_type";    
+    public static final String PROP_ATTRIBUTETYPE = "attribute_type";
 
     /**
      * Creates new form SelectSingleJobVisualPanel1
      */
     public SelectJobsVisualPanel1(Set<JobI> jobs, String selectJobString) {
         initComponents();
-        
+
         selectJobLabel.setText(selectJobString);
-        
+
         DefaultListModel<JobI> jobModel = new DefaultListModel<>();
         for (JobI job : jobs) {
             jobModel.addElement(job);
@@ -49,7 +53,7 @@ public final class SelectJobsVisualPanel1 extends JPanel {
     public int getAttributeTypeListCount() {
         return attributeTypeBox.getItemCount();
     }
-    
+
     public void setAttributeTypeList(List<AttributeTypeI> attrTypes) {
         Collections.sort(attrTypes);
         attributeTypeBox.removeAllItems();

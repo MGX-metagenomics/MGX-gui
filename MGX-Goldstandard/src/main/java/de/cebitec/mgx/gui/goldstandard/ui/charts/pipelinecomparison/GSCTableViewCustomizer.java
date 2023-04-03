@@ -10,6 +10,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Iterator;
 import javax.swing.JFileChooser;
@@ -24,6 +25,9 @@ import org.openide.util.NbPreferences;
  * @author pblumenk
  */
 public class GSCTableViewCustomizer extends javax.swing.JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static final int CHUNKSIZE = 2_500;
 
@@ -130,7 +134,7 @@ public class GSCTableViewCustomizer extends javax.swing.JPanel {
                         if (f.exists()) {
                             throw new IOException(f.getName() + " already exists.");
                         }
-                        try (BufferedWriter w = new BufferedWriter(new FileWriter(f))) {
+                        try ( BufferedWriter w = new BufferedWriter(new FileWriter(f))) {
                             if (includeHeaders()) {
                                 for (int col = 0; col < model.getColumnCount() - 1; col++) {
                                     w.write(model.getColumnName(col));

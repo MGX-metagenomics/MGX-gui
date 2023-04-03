@@ -7,6 +7,7 @@ import de.cebitec.mgx.gui.genbankexporter.GBKExporter;
 import de.cebitec.mgx.gui.pool.MGXPool;
 import de.cebitec.mgx.gui.swingutils.util.SuffixFilter;
 import java.io.File;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,6 +37,9 @@ import org.openide.util.actions.NodeAction;
 @ActionRegistration(displayName = "Export to GenBank", lazy = true)
 public class ExportBin extends NodeAction implements LookupListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final Lookup context;
     private Lookup.Result<BinI> lkpInfo;
 

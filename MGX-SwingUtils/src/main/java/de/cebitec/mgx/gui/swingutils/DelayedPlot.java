@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.swingutils;
 import de.cebitec.mgx.api.groups.ImageExporterI;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.io.Serial;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -18,6 +19,9 @@ import javax.swing.JScrollPane;
  */
 public class DelayedPlot extends javax.swing.JPanel {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private ImageExporterI exporter = null;
 
     /**

@@ -15,6 +15,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.geom.GeneralPath;
 import java.beans.PropertyChangeEvent;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +27,9 @@ import org.apache.commons.math3.util.FastMath;
  */
 public class SeqPropertyPanel extends PanelBase<ViewControllerI> {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public SeqPropertyPanel(ViewController vc, boolean antiAlias) {
         super(vc, antiAlias);
         super.setPreferredSize(new Dimension(5000, 35));

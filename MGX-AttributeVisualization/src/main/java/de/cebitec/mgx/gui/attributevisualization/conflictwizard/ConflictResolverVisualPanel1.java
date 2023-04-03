@@ -6,6 +6,7 @@ import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import java.awt.Component;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,7 +20,10 @@ import javax.swing.event.ListSelectionListener;
 
 public final class ConflictResolverVisualPanel1 extends JPanel implements ListSelectionListener {
 
-    private GroupI vg;
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    private GroupI<?> vg;
     private Object run;
 
     /**
@@ -38,6 +42,9 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
 
     private class CellRenderer extends DefaultListCellRenderer {
 
+        @Serial
+        private static final long serialVersionUID = 1L;
+
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             JobI job = (JobI) value;
@@ -54,7 +61,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
         jobList.setListData(jobs.toArray(new JobI[]{}));
     }
 
-    public void setData(GroupI group, Object run) {
+    public void setData(GroupI<?> group, Object run) {
         this.run = run;
         this.vg = group;
         groupLabel.setText(vg.getDisplayName());
@@ -81,7 +88,7 @@ public final class ConflictResolverVisualPanel1 extends JPanel implements ListSe
         if (vg == null) {
             return super.getName();
         }
-        
+
         if (vg.getContentClass().equals(SeqRunI.class)) {
             SeqRunI sr = (SeqRunI) run;
             return vg.getDisplayName() + ": " + sr.getName();

@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.MGXFileI;
 import de.cebitec.mgx.gui.swingutils.util.ServerFS;
 import java.io.File;
+import java.io.Serial;
 import javax.swing.JFileChooser;
 
 /**
@@ -12,6 +13,9 @@ import javax.swing.JFileChooser;
  */
 public class FileChooserPanel extends ValueHolderI {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final MGXMasterI master;
     private String fileName = null;
 

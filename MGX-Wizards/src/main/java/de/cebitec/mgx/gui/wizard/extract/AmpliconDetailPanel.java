@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.wizard.extract;
 
+import java.io.Serial;
 import javax.swing.JTextField;
 
 /**
@@ -13,6 +14,9 @@ import javax.swing.JTextField;
  */
 public class AmpliconDetailPanel extends javax.swing.JPanel {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     /**
      * Creates new form AmpliconDetailPanel
      */

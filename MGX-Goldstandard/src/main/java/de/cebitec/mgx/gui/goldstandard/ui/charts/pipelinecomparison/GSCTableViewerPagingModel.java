@@ -10,6 +10,7 @@ import java.awt.Graphics;
 import java.awt.Polygon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Iterator;
 import javax.swing.Icon;
@@ -28,6 +29,9 @@ import org.openide.util.Exceptions;
  * @author pblumenk
  */
 public class GSCTableViewerPagingModel extends AbstractTableModel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private int pageSize;
 

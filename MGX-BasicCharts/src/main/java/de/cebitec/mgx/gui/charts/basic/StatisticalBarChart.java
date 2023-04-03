@@ -173,7 +173,7 @@ public class StatisticalBarChart extends CategoricalViewerI<Long> implements Adj
     }
 
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return DistributionI.class;
     }
 

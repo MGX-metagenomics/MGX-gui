@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.wizard.extract;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComboBox;
@@ -13,6 +14,9 @@ import javax.swing.text.Document;
 
 public final class DNAExtractVisualPanel1 extends JPanel implements DocumentListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public static final String PROP_NAME = "name";
     public static final String PROP_METHOD = "method";
     public static final String PROP_PROTOCOL = "protocol";
@@ -233,7 +237,7 @@ public final class DNAExtractVisualPanel1 extends JPanel implements DocumentList
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            JComboBox cb = (JComboBox) e.getSource();
+            JComboBox<?> cb = (JComboBox) e.getSource();
             String methodName = (String) cb.getSelectedItem();
             CardLayout cl = (CardLayout) (placeholder.getLayout());
             cl.show(placeholder, methodName);

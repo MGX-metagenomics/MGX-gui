@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison;
 
 import de.cebitec.mgx.gui.goldstandard.util.PerformanceMetrics;
+import java.io.Serial;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -11,6 +12,9 @@ import javax.swing.table.AbstractTableModel;
  * @author patrick
  */
 public class GSCPerformanceMetricsTableModel extends AbstractTableModel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final PerformanceMetrics[] data;
     private final String[] header;

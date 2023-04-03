@@ -21,6 +21,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -34,6 +35,9 @@ import org.openide.util.Utilities;
  * @author plumenk
  */
 public class EvaluationControlPanel extends javax.swing.JPanel implements ActionListener, PropertyChangeListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final EvaluationTopComponent topComponent;
     //
@@ -245,11 +249,11 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
     }
 
     synchronized void update() {
-        
+
         if (busy) {
             return;
         }
-        
+
         Collection<? extends SeqRunI> seqruns = Utilities.actionsGlobalContext().lookupAll(SeqRunI.class);
 
         // we're only interested in single-selection
@@ -303,6 +307,9 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
 
     private final class ComparisonTypeListModel extends BaseModel<ComparisonTypeI> implements ItemListener {
 
+        @Serial
+        private static final long serialVersionUID = 1L;
+
         @Override
         @SuppressWarnings("unchecked")
         public synchronized void update() {
@@ -350,6 +357,9 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
 
     private final class VisualizationTypeListModel extends BaseModel<EvaluationViewerI> implements ItemListener {
 
+        @Serial
+        private static final long serialVersionUID = 1L;
+
         @Override
         @SuppressWarnings("unchecked")
         public synchronized void update() {
@@ -361,7 +371,7 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
 
             if (currentComparisonType != null) {
 
-                Class chartInterface = currentComparisonType.getChartInterface();
+                Class<?> chartInterface = currentComparisonType.getChartInterface();
 
                 SortedSet<EvaluationViewerI> viewers = new TreeSet<>();
                 if (chartInterface == GSComparisonI.class) {

@@ -69,7 +69,7 @@ public class TableViewer extends AbstractViewer<DistributionI<Long>> implements 
     }
 
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return DistributionI.class;
     }
 

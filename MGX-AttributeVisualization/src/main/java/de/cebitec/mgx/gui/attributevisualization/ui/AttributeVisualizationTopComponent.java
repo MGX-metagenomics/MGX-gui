@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.groups.ImageExporterI;
 import de.cebitec.mgx.api.groups.SequenceExporterI;
 import de.cebitec.mgx.gui.viewer.api.ViewerI;
 import java.awt.Image;
+import java.io.Serial;
 import java.util.Collections;
 import javax.swing.JComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -40,6 +41,9 @@ import org.openide.windows.WindowManager;
     "HINT_AttributeVisualizationTopComponent=Visualization window"
 })
 public final class AttributeVisualizationTopComponent extends TopComponent {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final InstanceContent content = new InstanceContent();
     private final Lookup lookup;
@@ -137,7 +141,7 @@ public final class AttributeVisualizationTopComponent extends TopComponent {
         content.set(Collections.emptyList(), null);
     }
 
-    public void setVisualization(ViewerI viewer) {
+    public void setVisualization(ViewerI<?> viewer) {
         JComponent c = viewer.getComponent();
 
         // 

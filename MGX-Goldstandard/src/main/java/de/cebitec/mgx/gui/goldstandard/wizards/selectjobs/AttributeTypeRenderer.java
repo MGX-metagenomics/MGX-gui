@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.goldstandard.wizards.selectjobs;
 
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import java.awt.Component;
+import java.io.Serial;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
@@ -11,6 +12,9 @@ import javax.swing.ListCellRenderer;
  * @author patrick
  */
 public class AttributeTypeRenderer extends JLabel implements ListCellRenderer<AttributeTypeI> {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public AttributeTypeRenderer() {
         super.setOpaque(true);

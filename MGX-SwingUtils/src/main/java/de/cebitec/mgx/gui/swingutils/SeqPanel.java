@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.swingutils;
 
 import de.cebitec.mgx.api.model.SequenceI;
 import java.awt.datatransfer.StringSelection;
+import java.io.Serial;
 
 /**
  *
@@ -14,6 +15,9 @@ import java.awt.datatransfer.StringSelection;
  */
 public class SeqPanel extends javax.swing.JPanel {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     /**
      * Creates new form SeqPanel
      */

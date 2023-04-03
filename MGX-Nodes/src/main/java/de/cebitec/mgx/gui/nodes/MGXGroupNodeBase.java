@@ -27,7 +27,7 @@ public abstract class MGXGroupNodeBase<T extends GroupI> extends AbstractNode im
         super(children, lookup);
         content = data;
         content.addPropertyChangeListener(this);
-        
+
         getSheet();
     }
 
@@ -91,8 +91,8 @@ public abstract class MGXGroupNodeBase<T extends GroupI> extends AbstractNode im
                     // own content changed; update display name etc.
                     //
                     updateModified();
-                    break;
                 }
+                break;
             case ModelBaseI.CHILD_CHANGE:
                 // NOP
                 break;

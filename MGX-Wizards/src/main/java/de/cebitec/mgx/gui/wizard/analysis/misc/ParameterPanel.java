@@ -1,12 +1,17 @@
 
 package de.cebitec.mgx.gui.wizard.analysis.misc;
 
+import java.io.Serial;
+
 /**
  *
  * @author sjaenick
  */
 public class ParameterPanel extends javax.swing.JPanel {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     /**
      * Creates new form ParameterPanel
      */

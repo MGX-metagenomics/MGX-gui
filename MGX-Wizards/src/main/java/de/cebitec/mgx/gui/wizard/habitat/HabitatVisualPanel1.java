@@ -6,6 +6,7 @@ import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.io.Serial;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.HashSet;
@@ -35,6 +36,9 @@ import org.xml.sax.InputSource;
 
 public final class HabitatVisualPanel1 extends JPanel implements DocumentListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public static final String PROP_NAME = "name";
     public static final String PROP_BIOME = "biome";
     public static final String PROP_LATITUDE = "latitude";

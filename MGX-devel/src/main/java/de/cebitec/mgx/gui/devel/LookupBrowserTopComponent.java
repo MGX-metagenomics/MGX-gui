@@ -5,6 +5,7 @@
  */
 package de.cebitec.mgx.gui.devel;
 
+import java.io.Serial;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -40,6 +41,9 @@ import org.openide.util.Utilities;
     "HINT_LookupBrowserTopComponent=This is a LookupBrowser window"
 })
 public final class LookupBrowserTopComponent extends TopComponent implements LookupListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final Lookup lkp;
     private final Lookup.Result<Object> res;

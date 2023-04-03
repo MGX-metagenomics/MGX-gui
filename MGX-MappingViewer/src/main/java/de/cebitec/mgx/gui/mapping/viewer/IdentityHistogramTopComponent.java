@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -53,6 +54,9 @@ import org.openide.util.Utilities;
 })
 public final class IdentityHistogramTopComponent extends TopComponent implements LookupListener, PropertyChangeListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final Lookup lkp;
     private final Lookup.Result<ViewControllerI> res;
     private ViewControllerI controller = null;

@@ -16,6 +16,7 @@ import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComponent;
@@ -27,6 +28,9 @@ import org.apache.commons.math3.util.FastMath;
  * @author sj
  */
 public class ObservationView extends javax.swing.JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates new form ObservationView
@@ -53,6 +57,9 @@ public class ObservationView extends javax.swing.JPanel {
     }
 
     private static class View extends JComponent {
+
+        @Serial
+        private static final long serialVersionUID = 1L;
 
         private SequenceI seq;
         private ObservationI[] obs;
@@ -82,7 +89,6 @@ public class ObservationView extends javax.swing.JPanel {
                 g2.dispose();
                 return;
             }
-            
 
             RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
@@ -121,7 +127,7 @@ public class ObservationView extends javax.swing.JPanel {
             Font f = g2.getFont();
             Font boldFont = new Font(f.getFontName(), Font.BOLD, f.getSize());
             Font normalFont = new Font(f.getFontName(), Font.PLAIN, f.getSize());
-            
+
             for (ObservationI o : obs) {
                 int scaledStart = FastMath.round(o.getStart() * scaleX);
                 int scaledStop = FastMath.round(o.getStop() * scaleX);
@@ -169,7 +175,6 @@ public class ObservationView extends javax.swing.JPanel {
             }
 
             //g2.setComposite(oldComp);
-
             // draw arrows (and borders)
             g2.setColor(Color.GREEN);
             for (ObservationArrow r : arrows) {
@@ -179,7 +184,7 @@ public class ObservationView extends javax.swing.JPanel {
             for (ObservationArrow r : arrows) {
                 g2.draw(r);
             }
-            
+
             g2.dispose();
         }
 
@@ -205,7 +210,7 @@ public class ObservationView extends javax.swing.JPanel {
                 createLayers(obs);
                 setMinimumSize(new Dimension(getWidth(), 2 * borderWidth + 30 + layers.size() * 15));
                 setPreferredSize(new Dimension(getWidth(), 2 * borderWidth + 30 + layers.size() * 15));
-                setMaximumSize(new Dimension(getWidth(), 2 * borderWidth + 30 + layers.size() * 15));          
+                setMaximumSize(new Dimension(getWidth(), 2 * borderWidth + 30 + layers.size() * 15));
             }
             repaint();
         }

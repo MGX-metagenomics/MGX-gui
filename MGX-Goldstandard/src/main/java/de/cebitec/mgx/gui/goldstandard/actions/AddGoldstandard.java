@@ -17,6 +17,7 @@ import de.cebitec.mgx.gui.pool.MGXPool;
 import de.cebitec.mgx.gui.rbac.RBAC;
 import java.awt.Dialog;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -41,6 +42,9 @@ import org.openide.util.actions.NodeAction;
 @ActionID(category = "Edit", id = "de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard")
 @ActionRegistration(displayName = "Add reference annotation", lazy = true)
 public final class AddGoldstandard extends NodeAction implements LookupListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final Lookup context;
     private Lookup.Result<SeqRunI> lkpInfo;

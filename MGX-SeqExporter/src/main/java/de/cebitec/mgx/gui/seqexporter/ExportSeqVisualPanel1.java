@@ -5,6 +5,7 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.gui.swingutils.JCheckBoxList;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,6 +22,9 @@ import javax.swing.event.DocumentListener;
 import org.openide.util.Exceptions;
 
 public final class ExportSeqVisualPanel1<T extends Number> extends JPanel implements PropertyChangeListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final JCheckBoxList<AttributeI> checkboxList = new JCheckBoxList<>();
     private boolean all_selected = true;

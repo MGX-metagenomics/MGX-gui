@@ -108,7 +108,7 @@ public class NMDSPlot extends AbstractViewer<DistributionI<Long>> implements Cus
     }
 
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return DistributionI.class;
     }
 

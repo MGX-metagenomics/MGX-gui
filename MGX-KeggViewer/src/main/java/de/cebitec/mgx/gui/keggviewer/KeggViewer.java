@@ -134,7 +134,7 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
     }
 
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return DistributionI.class;
     }
 

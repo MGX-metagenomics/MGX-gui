@@ -13,6 +13,7 @@ import de.cebitec.mgx.gui.swingutils.util.FileChooserUtils;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
+import java.io.Serial;
 import javax.swing.AbstractAction;
 import org.openide.util.Exceptions;
 import org.openide.util.Utilities;
@@ -23,6 +24,9 @@ import org.openide.util.Utilities;
  */
 public class UploadReference extends AbstractAction {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public UploadReference() {
         super.putValue(NAME, "Upload EMBL/GenBank/FASTA reference");
     }

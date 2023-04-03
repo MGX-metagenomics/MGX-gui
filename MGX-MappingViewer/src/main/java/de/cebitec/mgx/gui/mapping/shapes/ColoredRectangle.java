@@ -7,12 +7,16 @@ package de.cebitec.mgx.gui.mapping.shapes;
 
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
+import java.io.Serial;
 
 /**
  *
  * @author sjaenick
  */
 public class ColoredRectangle extends Rectangle2D.Float implements Comparable<ColoredRectangle> {
+    
+    @Serial
+    private static final long serialVersionUID = 1L;
     
     private final Color color;
 

@@ -19,6 +19,7 @@ import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.analysis.AnalysisWizardIterator;
+import java.io.Serial;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,6 +50,9 @@ import org.openide.util.actions.NodeAction;
 @ActionID(category = "Edit", id = "de.cebitec.mgx.gui.actions.AnnotateAssembly")
 @ActionRegistration(displayName = "Annotate", lazy = false)
 public class AnnotateAssembly extends NodeAction implements LookupListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final Lookup context;
     private Lookup.Result<AssemblyI> lkpInfo;

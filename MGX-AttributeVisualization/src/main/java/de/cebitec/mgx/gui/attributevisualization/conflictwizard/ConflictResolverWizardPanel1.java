@@ -20,13 +20,13 @@ import org.openide.util.HelpCtx;
 
 public class ConflictResolverWizardPanel1 implements WizardDescriptor.Panel<WizardDescriptor>, PropertyChangeListener {
 
-    private final GroupI vg;
+    private final GroupI<?> vg;
     private final Object run;
     private final AttributeRank rank;
     private final List<JobI> jobs;
     private final EventListenerList listeners = new EventListenerList();
 
-    public ConflictResolverWizardPanel1(GroupI vg, AttributeRank rank, Object run, Collection<JobI> j) {
+    public ConflictResolverWizardPanel1(GroupI<?> vg, AttributeRank rank, Object run, Collection<JobI> j) {
         this.vg = vg;
         this.run = run;
         this.jobs = new LinkedList<>();

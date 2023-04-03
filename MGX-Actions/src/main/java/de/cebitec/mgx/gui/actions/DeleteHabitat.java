@@ -14,6 +14,7 @@ import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import java.awt.event.ActionEvent;
+import java.io.Serial;
 import javax.swing.AbstractAction;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -25,6 +26,9 @@ import org.openide.util.Utilities;
  */
 public class DeleteHabitat extends AbstractAction {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public DeleteHabitat() {
         putValue(NAME, "Delete");
     }

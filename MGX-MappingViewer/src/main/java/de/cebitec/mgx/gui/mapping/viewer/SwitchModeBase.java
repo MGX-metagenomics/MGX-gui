@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.mapping.viewer;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serial;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
@@ -17,6 +18,9 @@ import javax.swing.JPopupMenu;
  */
 public abstract class SwitchModeBase extends JPopupMenu implements ActionListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final MappingViewerTopComponent tc;
 
     protected SwitchModeBase(MappingViewerTopComponent tc, String target) {

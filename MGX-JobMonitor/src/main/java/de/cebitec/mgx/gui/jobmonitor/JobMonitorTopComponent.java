@@ -10,6 +10,7 @@ import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -52,6 +53,9 @@ import org.openide.windows.TopComponent;
     "HINT_JobMonitorTopComponent=Job Monitor"
 })
 public final class JobMonitorTopComponent extends TopComponent implements LookupListener, ExplorerManager.Provider, PropertyChangeListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static enum MODE {
         MASTER,

@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.mapping.tracks;
 
 import de.cebitec.mgx.api.model.MappedSequenceI;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -41,7 +42,7 @@ public class Track implements Comparable<TrackI>, TrackI {
     public final MappedSequenceI getLast() {
         return last;
     }
-    
+
     @Override
     public final int getMax() {
         return getLast().getMax();
@@ -76,7 +77,7 @@ public class Track implements Comparable<TrackI>, TrackI {
     public Iterator<MappedSequenceI> getSequences() {
         return content.iterator();
     }
-    
+
     @Override
     public final Collection<MappedSequenceI> sequences() {
         return content;
@@ -130,6 +131,9 @@ public class Track implements Comparable<TrackI>, TrackI {
     }
 
     public class CheckOverlap extends RecursiveTask<Boolean> {
+
+        @Serial
+        private static final long serialVersionUID = 1L;
 
         private final MappedSequenceI[] data;
         private final MappedSequenceI ms;
@@ -205,6 +209,5 @@ public class Track implements Comparable<TrackI>, TrackI {
         final Track other = (Track) obj;
         return this.id == other.id;
     }
-    
-    
+
 }

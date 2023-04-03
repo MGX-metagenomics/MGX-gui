@@ -11,6 +11,7 @@ import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.io.Serial;
 import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +25,9 @@ import org.jfree.svg.SVGGraphics2D;
  * @author sj
  */
 public class SVGChartPanel extends ChartPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public SVGChartPanel(JFreeChart chart) {
         super(chart);
@@ -44,7 +48,7 @@ public class SVGChartPanel extends ChartPanel {
     public SVGChartPanel(JFreeChart chart, int width, int height, int minimumDrawWidth, int minimumDrawHeight, int maximumDrawWidth, int maximumDrawHeight, boolean useBuffer, boolean properties, boolean copy, boolean save, boolean print, boolean zoom, boolean tooltips) {
         super(chart, width, height, minimumDrawWidth, minimumDrawHeight, maximumDrawWidth, maximumDrawHeight, useBuffer, properties, copy, save, print, zoom, tooltips);
     }
-    
+
     @Override
     @SuppressWarnings("unchecked")
     public void paintComponent(Graphics g) {

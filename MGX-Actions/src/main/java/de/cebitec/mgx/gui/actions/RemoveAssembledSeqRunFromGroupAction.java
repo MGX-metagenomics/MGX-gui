@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.actions;
 
 import de.cebitec.mgx.api.groups.AssemblyGroupI;
 import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
+import java.io.Serial;
 import java.util.Collection;
 import static javax.swing.Action.NAME;
 import org.openide.awt.ActionID;
@@ -35,6 +36,9 @@ import org.openide.util.actions.NodeAction;
 )
 @NbBundle.Messages("CTL_RemoveAssembledSeqRunFromGroupAction=RemoveAssembledSeqRunFromGroupAction")
 public class RemoveAssembledSeqRunFromGroupAction extends NodeAction implements LookupListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final Lookup context;
     private Lookup.Result<AssembledSeqRunI> lkpInfo;

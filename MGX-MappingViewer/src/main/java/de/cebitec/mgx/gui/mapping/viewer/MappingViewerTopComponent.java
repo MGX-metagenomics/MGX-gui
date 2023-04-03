@@ -35,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -70,6 +71,9 @@ import org.openide.windows.WindowManager;
     "CTL_TopComponentViewer=Mapping Window",})
 public final class MappingViewerTopComponent extends TopComponent implements PropertyChangeListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final InstanceContent content = new InstanceContent();
     private final Lookup lookup;
 
@@ -374,7 +378,7 @@ public final class MappingViewerTopComponent extends TopComponent implements Pro
                 return Result.ABORT;
             }
 
-            List<PanelBase> useComponents = new ArrayList<>();
+            List<PanelBase<?>> useComponents = new ArrayList<>();
             if (useFeatures.isSelected()) {
                 useComponents.add(fp);
             }
@@ -401,7 +405,7 @@ public final class MappingViewerTopComponent extends TopComponent implements Pro
 
             int width = 0;
             int height = 0;
-            for (PanelBase jc : useComponents) {
+            for (PanelBase<?> jc : useComponents) {
                 height += jc.getHeight();
                 width = FastMath.max(width, jc.getWidth());
             }
@@ -409,7 +413,7 @@ public final class MappingViewerTopComponent extends TopComponent implements Pro
 
             Graphics2D g2;
             BufferedImage bi = null;
-            Iterator<PanelBase> it = useComponents.iterator();
+            Iterator<PanelBase<?>> it = useComponents.iterator();
 
             switch (type) {
                 case PNG:
@@ -426,7 +430,7 @@ public final class MappingViewerTopComponent extends TopComponent implements Pro
 
             // paint individual panels, separated by a horizontal line
             while (it.hasNext()) {
-                PanelBase jc = it.next();
+                PanelBase<?> jc = it.next();
                 jc.draw(g2);
                 g2.translate(0, jc.getHeight());
 

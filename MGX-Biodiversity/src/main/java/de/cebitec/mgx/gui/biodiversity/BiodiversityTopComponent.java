@@ -30,6 +30,7 @@ import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
 import de.cebitec.mgx.gui.biodiversity.statistic.StatisticI;
 import java.awt.Image;
+import java.io.Serial;
 
 /**
  * Top component which displays something.
@@ -56,6 +57,9 @@ import java.awt.Image;
     "HINT_BiodiversityTopComponent=Biodiversity Indices"
 })
 public final class BiodiversityTopComponent extends TopComponent implements LookupListener, PropertyChangeListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final Lookup.Result<VisualizationGroupI> result;
     private VisualizationGroupI curGroup = null;

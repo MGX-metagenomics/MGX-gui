@@ -348,7 +348,7 @@ public class RadialTree extends HierarchicalViewerI implements ImageExporterI.Pr
     }
 
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return TreeI.class;
     }
 

@@ -24,6 +24,7 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -79,6 +80,9 @@ import org.openide.util.lookup.InstanceContent;
         preferredID = "BlobogramTopComponent"
 )
 public final class BlobogramTopComponent extends TopComponent implements LookupListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final InstanceContent content = new InstanceContent();
     private final Lookup lookup;

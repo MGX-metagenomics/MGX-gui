@@ -11,12 +11,15 @@ import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
+import de.cebitec.mgx.seqcompression.SequenceException;
 import de.cebitec.mgx.seqstorage.FASTQWriter;
 import de.cebitec.mgx.seqstorage.FastaWriter;
 import de.cebitec.mgx.seqstorage.QualityEncoding;
+import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqWriterI;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -26,6 +29,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -85,11 +89,11 @@ public final class SeqExporter<T extends Number, U> implements SequenceExporterI
                 }
             }
 
-            SwingWorker<SeqWriterI, Void> worker = new SwingWorker<SeqWriterI, Void>() {
+            SwingWorker<SeqWriterI<?>, Void> worker = new SwingWorker<SeqWriterI<?>, Void>() {
                 @Override
                 @SuppressWarnings("unchecked")
-                protected SeqWriterI doInBackground() throws Exception {
-                    SeqWriterI writer;
+                protected SeqWriterI<?> doInBackground() throws Exception {
+                    SeqWriterI<? extends DNASequenceI> writer;
                     if (hasQuality) {
                         writer = new FASTQWriter(target.getAbsolutePath(), QualityEncoding.Sanger);
                     } else {
@@ -137,13 +141,13 @@ public final class SeqExporter<T extends Number, U> implements SequenceExporterI
 
                 @Override
                 protected void done() {
-                    SeqWriterI fw;
+                    SeqWriterI<? extends DNASequenceI> fw;
                     try {
                         fw = get();
                         if (fw != null) {
                             fw.close();
                         }
-                    } catch (Exception ex) {
+                    } catch (SequenceException | IOException | InterruptedException | ExecutionException ex) {
                         if (target.exists()) {
                             target.delete();
                         }

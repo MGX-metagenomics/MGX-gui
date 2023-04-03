@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.swingutils;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -25,6 +26,9 @@ import javax.swing.UIManager;
  */
 public class JCheckBoxList<T> extends JList<T> {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private Map<T, Boolean> selections = new HashMap<>();
     private DefaultListModel<T> model = new DefaultListModel<>();
     public static final String selectionChange = "SELECTION_CHANGED";

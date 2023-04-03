@@ -114,7 +114,7 @@ public class PCAPlot extends AbstractViewer<DistributionI<Long>> implements Cust
     }
 
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return DistributionI.class;
     }
 

@@ -11,6 +11,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serial;
 import java.text.DecimalFormat;
 import javax.swing.table.AbstractTableModel;
 import org.openide.DialogDisplayer;
@@ -21,6 +22,9 @@ import org.openide.NotifyDescriptor;
  * @author sj
  */
 public class BiodiversityCustomizer extends javax.swing.JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates new form BiodiversityCustomizer
@@ -97,7 +101,7 @@ public class BiodiversityCustomizer extends javax.swing.JPanel {
         String fName = FileChooserUtils.selectNewFilename(new FileType[]{FileType.TSV}, "MGX_export");
         if (fName != null) {
             File f = new File(fName);
-        
+
             try {
                 if (f.exists()) {
                     throw new IOException(f.getName() + " already exists.");

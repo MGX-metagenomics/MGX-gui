@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.wizard.analysis.misc;
 
 import de.cebitec.mgx.api.model.JobParameterI;
+import java.io.Serial;
 
 /**
  *
@@ -8,6 +9,9 @@ import de.cebitec.mgx.api.model.JobParameterI;
  */
 public class BooleanPanel extends ValueHolderI {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     /**
      * Creates new form BooleanPanel
      */

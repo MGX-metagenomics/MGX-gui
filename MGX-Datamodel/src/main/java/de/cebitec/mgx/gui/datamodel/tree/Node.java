@@ -131,7 +131,7 @@ public class Node<T> implements NodeI<T> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Node other = (Node) obj;
+        final Node<?> other = (Node) obj;
         if ((this.id == other.id) && (this.tree == other.tree)) {
             return true;
         }

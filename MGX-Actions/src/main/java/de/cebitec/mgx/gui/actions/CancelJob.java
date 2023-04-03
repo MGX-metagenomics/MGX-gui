@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.common.JobState;
 import de.cebitec.mgx.gui.rbac.RBAC;
 import java.awt.event.ActionEvent;
+import java.io.Serial;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.SwingWorker;
@@ -22,6 +23,9 @@ import org.openide.util.Utilities;
  */
 public class CancelJob extends AbstractAction {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public CancelJob() {
         super.putValue(NAME, "Cancel");
     }

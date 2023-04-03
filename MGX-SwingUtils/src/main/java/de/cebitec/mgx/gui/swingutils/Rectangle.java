@@ -7,12 +7,16 @@ package de.cebitec.mgx.gui.swingutils;
 
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
+import java.io.Serial;
 
 /**
  *
  * @author sj
  */
 public final class Rectangle extends Rectangle2D.Float implements ShapeBase {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final String toolTip;
     //
@@ -25,7 +29,7 @@ public final class Rectangle extends Rectangle2D.Float implements ShapeBase {
 
         if (length < 1) {
             length = 1;
-        } 
+        }
         super.setRect(x, y, length, HEIGHT);
         //shape = new Rectangle2D.Double(x, y, length, HEIGHT);
     }

@@ -7,6 +7,7 @@ import de.cebitec.mgx.gui.nodefactory.HabitatNodeFactory;
 import de.cebitec.mgx.gui.wizard.habitat.HabitatWizardDescriptor;
 import java.awt.Dialog;
 import java.awt.event.ActionEvent;
+import java.io.Serial;
 import java.util.concurrent.ExecutionException;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -49,8 +50,10 @@ public class ProjectDataNode extends AbstractNode { //MGXNodeBase<MGXMasterI> {
 //    public void updateModified() {
 //        //
 //    }
-
     private static class AddHabitat extends AbstractAction {
+
+        @Serial
+        private static final long serialVersionUID = 1L;
 
         public AddHabitat() {
             super.putValue(NAME, "Add habitat");
@@ -64,13 +67,13 @@ public class ProjectDataNode extends AbstractNode { //MGXNodeBase<MGXMasterI> {
             dialog.toFront();
             boolean cancelled = hwd.getValue() != WizardDescriptor.FINISH_OPTION;
             if (!cancelled) {
-                
+
                 final MGXMasterI m = Utilities.actionsGlobalContext().lookup(MGXMasterI.class);
-                
+
                 SwingWorker<HabitatI, Void> worker = new SwingWorker<HabitatI, Void>() {
                     @Override
                     protected HabitatI doInBackground() throws Exception {
-                        
+
                         return m.Habitat().create(hwd.getHabitatName(), hwd.getHabitatLatitude(), hwd.getHabitatLongitude(), hwd.getHabitatBiome(), hwd.getHabitatDescription());
                     }
 

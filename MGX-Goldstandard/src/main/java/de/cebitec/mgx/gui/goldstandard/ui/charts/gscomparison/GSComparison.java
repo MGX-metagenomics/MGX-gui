@@ -11,7 +11,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class GSComparison implements ComparisonTypeI {
 
     @Override
-    public final Class getChartInterface() {
+    public final Class<?> getChartInterface() {
         return GSComparisonI.class;
     }
 

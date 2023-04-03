@@ -11,6 +11,7 @@ import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
+import java.io.Serial;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +35,9 @@ import org.openide.util.lookup.InstanceContent;
  */
 public class GroupExplorerView<T extends GroupFrameBase> extends JScrollPane { //implements MouseListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final Map<T, Node> componentToNodeMap = new HashMap<>();
     private T selectedComponent = null;
     private transient Node root;

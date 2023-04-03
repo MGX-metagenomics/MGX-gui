@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.wizard.sample;
 
+import java.io.Serial;
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -7,6 +8,9 @@ import javax.swing.text.Document;
 
 public final class SampleVisualPanel2 extends JPanel implements DocumentListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public static final String PROP_MATERIAL = "material";
     public static final String PROP_TEMPERATURE = "temperature";
     public static final String PROP_VOLUME = "volume";

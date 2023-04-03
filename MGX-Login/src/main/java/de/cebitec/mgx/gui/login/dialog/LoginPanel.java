@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.login.dialog;
 
+import java.io.Serial;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -9,6 +10,9 @@ import javax.swing.event.DocumentListener;
  */
 public class LoginPanel extends javax.swing.JPanel implements DocumentListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final LoginHandler handler;
 
     public LoginPanel(LoginHandler handler) {

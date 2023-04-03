@@ -19,6 +19,7 @@ import de.cebitec.mgx.gui.visgroups.VGroupManager;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -36,6 +37,9 @@ import javax.swing.JList;
  * @author sj
  */
 public class SubDistCustomizer extends javax.swing.JPanel implements ItemListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final DefaultComboBoxModel<AttributeI> baseModel = new DefaultComboBoxModel<>();
     private final DefaultComboBoxModel<Pair<AttributeTypeI, JobI>> selectModel = new DefaultComboBoxModel<>();

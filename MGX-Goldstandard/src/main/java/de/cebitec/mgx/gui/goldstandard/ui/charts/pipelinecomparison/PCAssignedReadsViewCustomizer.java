@@ -1,18 +1,23 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison;
 
+import java.io.Serial;
+
 /**
  *
  * @author pblumenk
  */
-public class PCAssignedReadsViewCustomizer extends javax.swing.JPanel{
+public class PCAssignedReadsViewCustomizer extends javax.swing.JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates new form TableViewCustomizer
      */
     public PCAssignedReadsViewCustomizer() {
         initComponents();
-    }    
-    
+    }
+
     public boolean inLogScale() {
         return logScale.isSelected();
     }

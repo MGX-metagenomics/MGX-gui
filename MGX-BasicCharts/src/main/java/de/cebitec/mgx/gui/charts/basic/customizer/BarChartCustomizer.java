@@ -16,6 +16,7 @@ import de.cebitec.mgx.gui.vizfilter.ReplicateExcludeFilter;
 import de.cebitec.mgx.gui.vizfilter.ReplicateLimitFilter;
 import de.cebitec.mgx.gui.vizfilter.ReplicateSortOrder;
 import de.cebitec.mgx.gui.vizfilter.ReplicateToFractionFilter;
+import java.io.Serial;
 import java.util.List;
 import java.util.Set;
 
@@ -25,6 +26,9 @@ import java.util.Set;
  */
 public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI<Long>, DistributionI<Double>> {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private AttributeTypeI at;
 
     /**
@@ -33,7 +37,7 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
     public BarChartCustomizer() {
         initComponents();
     }
-    
+
     @Override
     public void setEnabled(boolean enabled) {
         if (enabled != super.isEnabled()) {
@@ -251,10 +255,9 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
 
 //        SortOrder<Double> sorter = new SortOrder<>(at, sortAscending.isSelected() ? SortOrder.ASCENDING : SortOrder.DESCENDING);
 //        ret = sorter.filter(ret);
-
         return ret;
     }
-    
+
     public List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> filterRep(List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> dists) {
 
         List<Triple<ReplicateGroupI, DistributionI<Double>, DistributionI<Double>>> ret = dists;
@@ -276,7 +279,7 @@ public class BarChartCustomizer extends javax.swing.JPanel implements VisFilterI
 
         ReplicateSortOrder sorter = new ReplicateSortOrder(at, sortAscending.isSelected() ? ReplicateSortOrder.ASCENDING : ReplicateSortOrder.DESCENDING);
         ret = sorter.filter(ret);
-        
+
         return ret;
     }
 

@@ -11,6 +11,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serial;
 import javax.swing.JFileChooser;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -21,6 +22,9 @@ import org.openide.util.NbPreferences;
  * @author sjaenick
  */
 public class HClustCustomizer extends javax.swing.JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private static final String[] AGGLO = new String[]{"ward", "single", "complete", "average", "mcquitty", "median", "centroid"};
     private static final String[] DIST = new String[]{"aitchison", "euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski"};

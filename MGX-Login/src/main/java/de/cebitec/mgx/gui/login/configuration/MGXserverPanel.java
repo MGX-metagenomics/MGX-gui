@@ -6,6 +6,7 @@ import de.cebitec.mgx.restgpms.GPMSClient;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.Serial;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -23,6 +24,9 @@ import org.openide.NotifyDescriptor;
 import org.openide.util.NbPreferences;
 
 public class MGXserverPanel extends javax.swing.JPanel implements DocumentListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final MGXserverOptionsPanelController controller;
 
@@ -239,6 +243,9 @@ public class MGXserverPanel extends javax.swing.JPanel implements DocumentListen
 
     private final class ServerListModel extends AbstractListModel<GPMSClientI> {
 
+        @Serial
+        private static final long serialVersionUID = 1L;
+
         java.util.List<GPMSClientI> data = new ArrayList<>();
 
         public void add(GPMSClientI c) {
@@ -270,8 +277,11 @@ public class MGXserverPanel extends javax.swing.JPanel implements DocumentListen
 
     private final class ServerListCellRenderer extends DefaultListCellRenderer {
 
+        @Serial
+        private static final long serialVersionUID = 1L;
+
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             return super.getListCellRendererComponent(list, ((GPMSClientI) value).getServerName(), index, isSelected, cellHasFocus);
         }
     }

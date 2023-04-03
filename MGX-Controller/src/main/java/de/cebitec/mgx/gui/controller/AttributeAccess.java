@@ -210,7 +210,7 @@ public class AttributeAccess extends MasterHolder implements AttributeAccessI {
         throw new MGXException("Attribute deletion is not supported. Delete the corresponding job instead.");
     }
 
-    public Matrix getCorrelation(AttributeTypeI attributeType1, JobI job1, AttributeTypeI attributeType2, JobI job2) throws MGXException {
+    public Matrix<?,?> getCorrelation(AttributeTypeI attributeType1, JobI job1, AttributeTypeI attributeType2, JobI job2) throws MGXException {
         try {
             AttributeCorrelation corr = getDTOmaster().Attribute().getCorrelation(attributeType1.getId(), job1.getId(), attributeType2.getId(), job2.getId());
             return MatrixDTOFactory.getInstance().toModel(getMaster(), corr);

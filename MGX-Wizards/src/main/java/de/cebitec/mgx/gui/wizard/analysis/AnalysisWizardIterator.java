@@ -55,7 +55,7 @@ public final class AnalysisWizardIterator implements WizardDescriptor.Iterator<W
         WizardDescriptor.Panel<WizardDescriptor>[] panels;
         panels = new WizardDescriptor.Panel[]{p1, p2, p3};
         int i = 0;
-        for (WizardDescriptor.Panel p : panels) {
+        for (WizardDescriptor.Panel<?> p : panels) {
             Component c = p.getComponent();
             if (c instanceof JComponent) {
                 JComponent jc = (JComponent) c;

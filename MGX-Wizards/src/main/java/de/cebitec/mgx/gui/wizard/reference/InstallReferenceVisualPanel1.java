@@ -2,6 +2,7 @@
 package de.cebitec.mgx.gui.wizard.reference;
 
 import de.cebitec.mgx.api.model.MGXReferenceI;
+import java.io.Serial;
 import java.util.Set;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
@@ -9,6 +10,9 @@ import javax.swing.event.ListSelectionListener;
 
 public final class InstallReferenceVisualPanel1 extends JPanel implements ListSelectionListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     /**
      * Creates new form InstallReferenceVisualPanel1
      */

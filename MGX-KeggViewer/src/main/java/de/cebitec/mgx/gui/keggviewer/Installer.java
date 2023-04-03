@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.netbeans.api.progress.ProgressHandle;
@@ -12,6 +13,9 @@ import org.openide.modules.ModuleInstall;
 import org.openide.modules.Places;
 
 public class Installer extends ModuleInstall {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public static boolean keggLoaded = false;
 
@@ -27,7 +31,7 @@ public class Installer extends ModuleInstall {
                 ph.finish();
             }
         };
-        
+
         MGXPool.getInstance().execute(runnable);
     }
 
@@ -36,13 +40,13 @@ public class Installer extends ModuleInstall {
         if (new File(target).exists()) {
             new File(target).delete();
         }
-        
+
         if (!new File(targetDir).exists()) {
             new File(targetDir).mkdirs();
         }
 
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream("de/cebitec/mgx/gui/keggviewer/kegg.db")) {
-            try (FileOutputStream rOut = new FileOutputStream(target)) {
+        try ( InputStream is = getClass().getClassLoader().getResourceAsStream("de/cebitec/mgx/gui/keggviewer/kegg.db")) {
+            try ( FileOutputStream rOut = new FileOutputStream(target)) {
 
                 byte[] buffer = new byte[4096];
 

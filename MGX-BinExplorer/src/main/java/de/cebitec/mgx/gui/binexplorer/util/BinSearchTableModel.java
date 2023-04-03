@@ -9,6 +9,7 @@ import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.BinSearchResultI;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +21,9 @@ import org.openide.util.Exceptions;
  * @author sj
  */
 public class BinSearchTableModel extends DefaultTableModel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final List<BinSearchResultI> resList = new ArrayList<>();
 

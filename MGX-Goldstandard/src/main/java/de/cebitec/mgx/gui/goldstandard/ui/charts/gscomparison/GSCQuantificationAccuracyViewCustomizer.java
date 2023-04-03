@@ -1,10 +1,15 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts.gscomparison;
 
+import java.io.Serial;
+
 /**
  *
  * @author pblumenk
  */
 public class GSCQuantificationAccuracyViewCustomizer extends javax.swing.JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private GSCPerformanceMetricsTableModel model;
 

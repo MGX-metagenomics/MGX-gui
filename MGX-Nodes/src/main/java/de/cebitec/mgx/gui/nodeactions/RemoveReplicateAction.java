@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.nodeactions;
 
 import de.cebitec.mgx.api.groups.ReplicateI;
 import java.awt.event.ActionEvent;
+import java.io.Serial;
 import java.util.Collection;
 import javax.swing.AbstractAction;
 import org.openide.util.Utilities;
@@ -16,6 +17,9 @@ import org.openide.util.Utilities;
  * @author sjaenick
  */
 public class RemoveReplicateAction extends AbstractAction {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public RemoveReplicateAction() {
         super.putValue(NAME, "Remove replicate");
@@ -28,5 +32,5 @@ public class RemoveReplicateAction extends AbstractAction {
             repl.getReplicateGroup().remove(repl);
         }
     }
-    
+
 }

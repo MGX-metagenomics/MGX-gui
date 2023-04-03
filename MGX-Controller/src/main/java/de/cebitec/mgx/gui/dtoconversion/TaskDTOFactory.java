@@ -21,7 +21,7 @@ public class TaskDTOFactory<T extends MGXDataModelBaseI<T>> extends DTOConversio
 
     private TaskDTOFactory() {
     }
-    private static MGXDataModelBaseI object;
+    private static MGXDataModelBaseI<?> object;
     private static UUID taskUUid;
     private static TaskType taskType;
 

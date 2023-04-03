@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.binexplorer.util;
 
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import java.awt.Component;
+import java.io.Serial;
 import java.text.NumberFormat;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -18,6 +19,9 @@ import javax.swing.UIManager;
  * @author sj
  */
 public class ContigRenderer extends JLabel implements ListCellRenderer<ContigI> {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final NumberFormat formatter;
 

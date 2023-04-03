@@ -6,6 +6,7 @@
 package de.cebitec.mgx.gui.wizard.job;
 
 import de.cebitec.mgx.api.model.ToolI;
+import java.io.Serial;
 
 
 /**
@@ -13,6 +14,9 @@ import de.cebitec.mgx.api.model.ToolI;
  * @author sj
  */
 public class ToolPanel extends javax.swing.JPanel {
+    
+    @Serial
+    private static final long serialVersionUID = 1L;
     
     private ToolI tool = null;
 

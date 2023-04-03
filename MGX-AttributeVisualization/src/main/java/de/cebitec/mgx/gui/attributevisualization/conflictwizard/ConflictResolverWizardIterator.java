@@ -49,7 +49,8 @@ public final class ConflictResolverWizardIterator implements WizardDescriptor.It
         List<Pair<GroupI, Triple<AttributeRank, Object, JobI>>> l = new ArrayList<>();
         for (Panel<WizardDescriptor> p : panels) {
             ConflictResolverWizardPanel1 tmp = (ConflictResolverWizardPanel1) p;
-            l.add(tmp.getSelection());
+            Pair<GroupI, Triple<AttributeRank, Object, JobI>> selection = tmp.getSelection();
+            l.add(selection);
         }
         return l;
     }
@@ -59,13 +60,13 @@ public final class ConflictResolverWizardIterator implements WizardDescriptor.It
         if (panels == null) {
             panels = new ArrayList<>();
 
-            for (final GroupI vg : groups) {
+            for (final GroupI<?> vg : groups) {
                 
                 //
                 // the job objects don't have the corresponding tool instance set
                 // here, so we need to fetch them separately
                 //
-                for (final Triple<AttributeRank, Object, Set<JobI>> e : (List<Triple<AttributeRank, Object, Set<JobI>>>)vg.getConflicts()) {
+                for (final Triple<AttributeRank, ?, Set<JobI>> e : (List<Triple<AttributeRank, ?, Set<JobI>>>)vg.getConflicts()) {
                     final Set<JobI> jobs = e.getThird();
                     try {
                         for (final JobI job : jobs) {

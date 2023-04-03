@@ -241,7 +241,7 @@ public class RarefactionCurve extends AbstractViewer<DistributionI<Long>> implem
     }
 
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return DistributionI.class;
     }
 

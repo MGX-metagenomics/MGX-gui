@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.blobogram;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.io.Serial;
 import java.util.Collection;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -35,6 +36,9 @@ import org.openide.windows.WindowManager;
 })
 public final class BlobogramAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private final Lookup.Result<BinI> result;
 
     public BlobogramAction() {
@@ -51,7 +55,7 @@ public final class BlobogramAction extends AbstractAction implements ContextAwar
 
     @Override
     public Action createContextAwareInstance(Lookup lkp) {
-        Action a =  new BlobogramAction(lkp);
+        Action a = new BlobogramAction(lkp);
         Collection<? extends BinI> allBins = result.allInstances();
         a.setEnabled(!allBins.isEmpty());
         return a;

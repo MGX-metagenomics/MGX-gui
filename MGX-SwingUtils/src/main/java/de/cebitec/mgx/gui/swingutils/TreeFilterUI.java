@@ -13,6 +13,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,6 +35,9 @@ import org.openide.util.Exceptions;
  */
 public class TreeFilterUI extends javax.swing.JPanel implements ItemListener, PropertyChangeListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     /**
      * Creates new form TreeFilter
      */

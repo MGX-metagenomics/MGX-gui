@@ -13,6 +13,7 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.beans.PropertyChangeEvent;
+import java.io.Serial;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,6 +25,9 @@ import org.apache.commons.math3.util.FastMath;
  * @author sjaenick
  */
 public class SeqPropertyPanel extends PanelBase<ContigViewController> {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates new form FeaturePanel

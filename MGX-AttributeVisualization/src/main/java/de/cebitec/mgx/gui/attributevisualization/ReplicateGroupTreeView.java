@@ -4,6 +4,7 @@ package de.cebitec.mgx.gui.attributevisualization;
 import de.cebitec.mgx.api.groups.ReplicateGroupI;
 import de.cebitec.mgx.gui.nodefactory.ReplicateNodeFactory;
 import java.awt.dnd.DnDConstants;
+import java.io.Serial;
 import org.openide.explorer.view.BeanTreeView;
 
 /**
@@ -12,6 +13,9 @@ import org.openide.explorer.view.BeanTreeView;
  */
 final class ReplicateGroupTreeView extends BeanTreeView { //implements PropertyChangeListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final ReplicateGroupI rGroup;
     private final ReplicateNodeFactory rgnf;
    @Override

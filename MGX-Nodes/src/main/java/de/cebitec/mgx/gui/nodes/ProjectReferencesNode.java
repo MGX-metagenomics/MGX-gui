@@ -14,6 +14,7 @@ import de.cebitec.mgx.gui.wizard.reference.InstallReferenceDescriptor;
 import java.awt.Dialog;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.io.Serial;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import org.openide.DialogDisplayer;
@@ -66,6 +67,9 @@ public class ProjectReferencesNode extends AbstractNode {
 //        //
 //    }
     private static class AddGlobalReference extends AbstractAction {
+
+        @Serial
+        private static final long serialVersionUID = 1L;
 
         public AddGlobalReference() {
             super.putValue(NAME, "Add reference");

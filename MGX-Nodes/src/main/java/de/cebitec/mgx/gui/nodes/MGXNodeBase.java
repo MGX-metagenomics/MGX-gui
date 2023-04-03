@@ -96,8 +96,8 @@ public abstract class MGXNodeBase<T extends ModelBaseI<T>> extends AbstractNode 
                     // own content changed; update display name etc.
                     //
                     updateModified();
-                    break;
                 }
+                break;
             case ModelBaseI.CHILD_CHANGE:
                 // NOP
                 break;

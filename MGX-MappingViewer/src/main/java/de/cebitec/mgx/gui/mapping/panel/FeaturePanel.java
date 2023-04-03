@@ -26,6 +26,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeEvent;
+import java.io.Serial;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -45,6 +46,9 @@ import org.openide.util.Exceptions;
  */
 public class FeaturePanel extends PanelBase<ViewControllerI> implements MouseListener, MouseMotionListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final static int FRAME_VOFFSET = 20;
     private final static int[] frameOffsets = new int[]{
         10 + -1 * FRAME_VOFFSET * -3,

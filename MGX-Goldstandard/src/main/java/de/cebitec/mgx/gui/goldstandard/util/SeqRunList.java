@@ -13,6 +13,7 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Collection;
 import org.openide.explorer.view.TreeTableView;
 import org.openide.nodes.Node;
@@ -25,6 +26,9 @@ import org.openide.util.datatransfer.MultiTransferObject;
  * @author patrick
  */
 public class SeqRunList extends TreeTableView implements PropertyChangeListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final VisualizationGroupI vGroup;
     private final SingleSeqRunNodeFactory vgnf;

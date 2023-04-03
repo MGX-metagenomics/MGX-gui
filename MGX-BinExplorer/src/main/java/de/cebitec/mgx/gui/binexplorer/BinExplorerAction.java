@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.binexplorer;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.io.Serial;
 import java.util.Collection;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -36,6 +37,9 @@ import org.openide.windows.WindowManager;
 })
 public final class BinExplorerAction extends AbstractAction implements ContextAwareAction, LookupListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     private final Lookup.Result<BinI> result;
 
     public BinExplorerAction() {
@@ -57,7 +61,7 @@ public final class BinExplorerAction extends AbstractAction implements ContextAw
 
     @Override
     public void actionPerformed(ActionEvent ev) {
-        
+
         TopComponent explorer = WindowManager.getDefault().findTopComponent("BinExplorerTopComponent");
         if (explorer == null) {
             explorer = new BinExplorerTopComponent();
@@ -80,7 +84,7 @@ public final class BinExplorerAction extends AbstractAction implements ContextAw
         if (search == null) {
             search = new BinSearchTopComponent();
         }
-        
+
         if (!search.isOpened()) {
             Mode m = WindowManager.getDefault().findMode("satellite");
             if (m != null) {

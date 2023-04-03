@@ -2,6 +2,7 @@ package de.cebitec.mgx.gui.goldstandard.wizards.selectjobs;
 
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,9 @@ import javax.swing.JPanel;
 import javax.swing.event.ListSelectionListener;
 
 public final class TimeEvalJobVisualPanel1 extends JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public static final String PROP_JOBS = "job";
 

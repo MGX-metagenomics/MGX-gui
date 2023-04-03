@@ -16,6 +16,7 @@ import de.cebitec.mgx.gui.mapping.viewer.MappingViewerTopComponent;
 import de.cebitec.mgx.gui.pool.MGXPool;
 import de.cebitec.mgx.gui.wizard.mapping.MappingWizardWizardAction;
 import java.awt.event.ActionEvent;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +29,9 @@ import org.openide.util.Utilities;
  * @author sj
  */
 public class OpenMappingByReference extends OpenMappingBase {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private boolean hasData = false;
 

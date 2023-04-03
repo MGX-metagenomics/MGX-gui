@@ -36,6 +36,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -97,6 +98,9 @@ import org.openide.util.lookup.InstanceContent;
     "HINT_BinExplorerTopComponent=Bin Explorer"
 })
 public final class BinExplorerTopComponent extends TopComponent implements LookupListener, PropertyChangeListener, ItemListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final Lookup.Result<BinI> binResult;
     private final Lookup.Result<BinSearchResultI> binSearchResult;

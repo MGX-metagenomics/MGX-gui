@@ -14,6 +14,7 @@ import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import java.awt.event.ActionEvent;
+import java.io.Serial;
 import javax.swing.AbstractAction;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -24,6 +25,9 @@ import org.openide.util.Utilities;
  * @author sjaenick
  */
 public class DeleteReference extends AbstractAction {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public DeleteReference() {
         putValue(NAME, "Delete");
@@ -71,5 +75,5 @@ public class DeleteReference extends AbstractAction {
     public boolean isEnabled() {
         return super.isEnabled() && RBAC.isUser();
     }
-    
+
 }

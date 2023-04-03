@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.wizard.mapping;
 
 import de.cebitec.mgx.api.model.JobParameterI;
 import de.cebitec.mgx.gui.mapping.MappingCtx;
+import java.io.Serial;
 import java.util.List;
 
 /**
@@ -15,6 +16,9 @@ import java.util.List;
  */
 public class MappingPanel extends javax.swing.JPanel {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     /**
      * Creates new form MappingPanel
      */

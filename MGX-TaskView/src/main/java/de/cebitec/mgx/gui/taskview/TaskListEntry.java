@@ -9,6 +9,7 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serial;
 import javax.swing.ToolTipManager;
 
 /**
@@ -16,6 +17,9 @@ import javax.swing.ToolTipManager;
  * @author sj
  */
 public class TaskListEntry extends javax.swing.JPanel implements PropertyChangeListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates new form TaskListEntry

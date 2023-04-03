@@ -13,6 +13,7 @@ import de.cebitec.mgx.common.JobState;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
+import java.io.Serial;
 import java.util.Collection;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
@@ -36,6 +37,9 @@ import org.openide.util.actions.NodeAction;
 @Messages("CTL_DeleteJobNodeAction=DeleteJobNodeAction")
 public final class DeleteJobNodeAction extends NodeAction {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     @Override
     protected void performAction(Node[] activatedNodes) {
 

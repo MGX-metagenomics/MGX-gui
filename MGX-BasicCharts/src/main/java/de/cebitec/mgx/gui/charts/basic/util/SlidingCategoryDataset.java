@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.charts.basic.util;
 
+import java.io.Serial;
 import java.util.List;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -7,6 +8,9 @@ import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetChangeListener;
 
 public class SlidingCategoryDataset extends DefaultCategoryDataset implements DatasetChangeListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final CategoryDataset underlying;
     private double maxY;

@@ -6,9 +6,9 @@
 package de.cebitec.mgx.gui.report.ui;
 
 import de.cebitec.mgx.api.model.SeqRunI;
-import de.cebitec.mgx.api.model.assembly.BinI;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
+import java.io.Serial;
 import java.util.Collection;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -39,6 +39,9 @@ import org.openide.windows.WindowManager;
     @ActionReference(path = "Toolbars/UndoRedo", position = 400)
 })
 public final class ReportAction extends AbstractAction implements ContextAwareAction, LookupListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final Lookup.Result<SeqRunI> result;
 

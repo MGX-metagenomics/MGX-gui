@@ -5,12 +5,9 @@
  */
 package de.cebitec.mgx.gui.treeview;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
-import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
-import de.cebitec.mgx.api.model.tree.TreeI;
-import java.util.List;
+import java.io.Serial;
 import java.util.Set;
 
 /**
@@ -18,6 +15,9 @@ import java.util.Set;
  * @author sjaenick
  */
 public class TreeViewCustomizer extends javax.swing.JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates new form TreeViewCustomizer
@@ -45,9 +45,9 @@ public class TreeViewCustomizer extends javax.swing.JPanel {
     }
 
     public Set<AttributeI> getBlackList() {
-       return treeFilter.getBlackList();
+        return treeFilter.getBlackList();
     }
-    
+
     private AttributeTypeI at;
 
     public void setAttributeType(final AttributeTypeI aType) {

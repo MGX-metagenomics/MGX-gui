@@ -15,6 +15,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.beans.PropertyChangeEvent;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +28,9 @@ import org.openide.util.Exceptions;
  */
 public class RecruitmentIdentityPanel extends PanelBase<ViewControllerI> {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private int BIN_SIZE = 10_000;
     //
     private final static float MID_BIN_THRESHOLD = 75f;

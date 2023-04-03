@@ -13,6 +13,7 @@ import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Collection;
 import javax.swing.DefaultListModel;
 import javax.swing.DefaultListCellRenderer;
@@ -29,6 +30,9 @@ import org.openide.nodes.NodeTransfer;
  * @author patrick
  */
 public class SeqRunDropList extends JPanel implements DropTargetListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final DefaultListModel listModel = new DefaultListModel<>();
     private DropTarget dropTarget;

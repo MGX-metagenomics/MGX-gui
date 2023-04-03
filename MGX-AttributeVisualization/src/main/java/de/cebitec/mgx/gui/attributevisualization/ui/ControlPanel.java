@@ -34,6 +34,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serial;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,6 +54,9 @@ import org.openide.util.Lookup;
  * @author sjaenick
  */
 public class ControlPanel extends javax.swing.JPanel implements PropertyChangeListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final VGroupManagerI vgmgr;
     private AttributeVisualizationTopComponent topComponent;
@@ -246,9 +250,12 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
     private final class AttributeTypeListModel extends BaseModel<AttributeTypeI> implements ItemListener {
 
+        @Serial
+        private static final long serialVersionUID = 1L;
+
         @Override
         public void update() {
-            
+
             // UI update - needs to be on EDT
             final CountDownLatch uiUpdated = new CountDownLatch(1);
             EventQueue.invokeLater(new Runnable() {
@@ -265,7 +272,6 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
                     uiUpdated.countDown();
                 }
             });
-            
 
             SwingWorker<Collection<AttributeTypeI>, Void> worker = new SwingWorker<Collection<AttributeTypeI>, Void>() {
                 @Override
@@ -345,6 +351,9 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
 
     private final class VisualizationTypeListModel extends BaseModel<ViewerI<Visualizable>> implements ItemListener {
 
+        @Serial
+        private static final long serialVersionUID = 1L;
+
         @Override
         @SuppressWarnings("unchecked")
         public synchronized void update() {
@@ -356,7 +365,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             updateButton.setEnabled(false);
 
             List<ViewerI<Visualizable>> viewers = new ArrayList<>();
-            for (ViewerI viewer : Lookup.getDefault().<ViewerI>lookupAll(ViewerI.class)) {
+            for (ViewerI<Visualizable> viewer : Lookup.getDefault().<ViewerI>lookupAll(ViewerI.class)) {
                 long duration = System.currentTimeMillis();
                 if (viewer.canHandle(currentAttributeType)) {
                     viewers.add(viewer);
@@ -401,7 +410,7 @@ public class ControlPanel extends javax.swing.JPanel implements PropertyChangeLi
             if (e.getStateChange() != ItemEvent.SELECTED) {
                 return;
             }
-            
+
             // on selection change, clear lookup contents #155
             topComponent.clearLookup();
 

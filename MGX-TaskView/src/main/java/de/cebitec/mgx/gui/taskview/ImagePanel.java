@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.taskview;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.io.Serial;
 import javax.swing.JComponent;
 import org.openide.util.ImageUtilities;
 
@@ -12,6 +13,9 @@ import org.openide.util.ImageUtilities;
  */
 class ImagePanel extends JComponent {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private Image img = null;
 
     void setImage(String path) {

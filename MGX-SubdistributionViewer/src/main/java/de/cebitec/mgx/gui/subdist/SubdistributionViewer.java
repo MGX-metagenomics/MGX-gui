@@ -81,7 +81,7 @@ public class SubdistributionViewer extends CategoricalViewerI<Long> implements C
     }
     
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return DistributionI.class;
     }
     

@@ -5,11 +5,16 @@
  */
 package de.cebitec.mgx.gui.pcoa;
 
+import java.io.Serial;
+
 /**
  *
  * @author sjaenick
  */
 public class PCoACustomizer extends javax.swing.JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates new form PCoACustomizer

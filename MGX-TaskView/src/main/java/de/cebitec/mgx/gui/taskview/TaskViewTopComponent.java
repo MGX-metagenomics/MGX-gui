@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,6 +34,9 @@ import org.openide.windows.TopComponent;
 //@ServiceProvider(service = TaskViewTopComponent.class)
 public final class TaskViewTopComponent extends TopComponent implements PropertyChangeListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public TaskViewTopComponent() {
         initComponents();
         setName(NbBundle.getMessage(TaskViewTopComponent.class, "CTL_TaskViewTopComponent"));

@@ -131,7 +131,7 @@ public class AssembledRegionAccess extends MasterHolder implements AssembledRegi
     
 
     @Override
-    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> attrs, SeqWriterI<DNASequenceI> writer, boolean closeWriter, Set<String> seenGeneNames) throws MGXException {
+    public DownloadBaseI createDownloaderByAttributes(Set<AttributeI> attrs, SeqWriterI<? extends DNASequenceI> writer, boolean closeWriter, Set<String> seenGeneNames) throws MGXException {
         AttributeDTOList.Builder b = AttributeDTOList.newBuilder();
         for (AttributeI a : attrs) {
             b.addAttribute(AttributeDTOFactory.getInstance().toDTO(a));

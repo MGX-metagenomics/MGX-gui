@@ -13,6 +13,7 @@ import de.cebitec.mgx.gui.rbac.RBAC;
 import de.cebitec.mgx.gui.swingutils.NonEDT;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import org.openide.awt.ActionID;
@@ -36,6 +37,9 @@ import org.openide.util.actions.NodeAction;
 @Messages("CTL_RestartJobAction=RestartJobAction")
 public final class RestartJobAction extends NodeAction {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     @Override
     protected void performAction(Node[] activatedNodes) {
 

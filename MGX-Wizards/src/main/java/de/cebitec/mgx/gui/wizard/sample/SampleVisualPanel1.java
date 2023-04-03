@@ -5,6 +5,7 @@ import com.github.lgooddatepicker.components.DatePickerSettings;
 import com.github.lgooddatepicker.optionalusertools.CalendarListener;
 import com.github.lgooddatepicker.zinternaltools.CalendarSelectionEvent;
 import com.github.lgooddatepicker.zinternaltools.YearMonthChangeEvent;
+import java.io.Serial;
 
 import javax.swing.*;
 import java.time.DayOfWeek;
@@ -17,6 +18,9 @@ import java.util.Locale;
 
 public final class SampleVisualPanel1 extends JPanel  {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public static final String PROP_COLLECTIONDATE = "collection_date";
 
     /**

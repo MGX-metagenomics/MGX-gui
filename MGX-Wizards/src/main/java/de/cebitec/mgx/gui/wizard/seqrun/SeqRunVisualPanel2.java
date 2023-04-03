@@ -5,12 +5,16 @@ import de.cebitec.mgx.gui.swingutils.util.SuffixFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.Serial;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import org.openide.util.NbPreferences;
 
 public final class SeqRunVisualPanel2 extends JPanel {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public static final String PROP_SEQFILES = "seqfiles";
     private File file1 = null;
     private File file2 = null;

@@ -1,10 +1,15 @@
 package de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison;
 
+import java.io.Serial;
+
 /**
  *
  * @author pblumenk
  */
 public class GSCVennChartCustomizer extends javax.swing.JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates new form TableViewCustomizer
@@ -12,11 +17,10 @@ public class GSCVennChartCustomizer extends javax.swing.JPanel {
     public GSCVennChartCustomizer() {
         initComponents();
     }
-    
-    public void dispose(){
-        
-    }
 
+    public void dispose() {
+
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -41,6 +45,4 @@ public class GSCVennChartCustomizer extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-
-
 }

@@ -5,6 +5,7 @@ import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
 import java.io.File;
+import java.io.Serial;
 import java.lang.reflect.Field;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
@@ -16,6 +17,9 @@ import org.openide.util.Exceptions;
 import org.openide.util.NbPreferences;
 
 public final class ExportSeqVisualPanel2<U> extends JPanel implements DocumentListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates new form ExportSeqVisualPanel2
@@ -33,7 +37,7 @@ public final class ExportSeqVisualPanel2<U> extends JPanel implements DocumentLi
 
         try {
             FileChooserUI ui2 = jFileChooser1.getUI();
-            Class c = ui2.getClass();
+            Class<?> c = ui2.getClass();
             Field f = null;
             try {
                 f = c.getDeclaredField("filenameTextField");

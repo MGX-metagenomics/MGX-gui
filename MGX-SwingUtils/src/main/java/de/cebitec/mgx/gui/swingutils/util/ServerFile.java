@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.swingutils.util;
 import de.cebitec.mgx.api.model.MGXFileI;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 
 /**
  *
@@ -10,6 +11,9 @@ import java.io.IOException;
  */
 public class ServerFile extends File {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final MGXFileI file;
 
     public ServerFile(MGXFileI file) {

@@ -1,10 +1,15 @@
 package de.cebitec.mgx.gui.charts.basic.customizer;
 
+import java.io.Serial;
+
 /**
  *
  * @author sjaenick
  */
 public class VolcanoPlotCustomizer extends javax.swing.JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates new form XYPlotCustomizer

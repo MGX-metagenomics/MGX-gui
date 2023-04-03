@@ -5,12 +5,17 @@
  */
 package de.cebitec.mgx.gui.mapping.viewer;
 
+import java.io.Serial;
+
 /**
  *
  * @author sjaenick
  */
 public class SwitchToRecruitment extends SwitchModeBase {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public SwitchToRecruitment(MappingViewerTopComponent tc) {
         super(tc, "Fragment recruitment");
     }

@@ -2,12 +2,16 @@ package de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison;
 
 import javax.swing.DefaultComboBoxModel;
 import de.cebitec.mgx.gui.goldstandard.ui.charts.pipelinecomparison.PCDistanceViewer.DistanceMethod;
+import java.io.Serial;
 
 /**
  *
  * @author pblumenk
  */
 public class PCDistanceViewCustomizer extends javax.swing.JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * Creates new form TableViewCustomizer
@@ -25,8 +29,9 @@ public class PCDistanceViewCustomizer extends javax.swing.JPanel {
     public DistanceMethod getDistanceMethod() {
         return (DistanceMethod) distanceMethodComboBox.getSelectedItem();
     }
-    
-    public void dispose(){ }
+
+    public void dispose() {
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

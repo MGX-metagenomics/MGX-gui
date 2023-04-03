@@ -4,6 +4,7 @@ import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
 import de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard;
 import java.awt.event.ActionListener;
+import java.io.Serial;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,9 @@ import javax.swing.JPanel;
 import javax.swing.event.ListSelectionListener;
 
 public final class SelectSingleJobWithGSVisualPanel1 extends JPanel {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public static final String PROP_JOB = "job";
     public static final String PROP_ATTRIBUTETYPE = "attribute_type";

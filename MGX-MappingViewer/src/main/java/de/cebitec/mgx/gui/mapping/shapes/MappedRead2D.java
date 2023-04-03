@@ -7,6 +7,7 @@ package de.cebitec.mgx.gui.mapping.shapes;
 import de.cebitec.mgx.api.model.MappedSequenceI;
 import java.awt.Color;
 import java.awt.geom.Rectangle2D;
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -16,6 +17,9 @@ import java.util.Locale;
  */
 public class MappedRead2D extends Rectangle2D.Float implements Comparable<MappedRead2D> {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private final MappedSequenceI ms;
     //private final Shape shape;
     private final static Color[] gradient = new Color[101];

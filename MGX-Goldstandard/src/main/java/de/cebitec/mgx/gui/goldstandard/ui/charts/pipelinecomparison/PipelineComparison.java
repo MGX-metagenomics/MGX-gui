@@ -11,7 +11,7 @@ import org.openide.util.lookup.ServiceProvider;
 public class PipelineComparison implements ComparisonTypeI {
 
     @Override
-    public final Class getChartInterface() {
+    public final Class<?> getChartInterface() {
         return PipelineComparisonI.class;
     }
 

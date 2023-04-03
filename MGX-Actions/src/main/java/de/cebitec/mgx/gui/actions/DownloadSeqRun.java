@@ -19,6 +19,7 @@ import de.cebitec.mgx.sequence.SeqWriterI;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
+import java.io.Serial;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.AbstractAction;
@@ -36,6 +37,9 @@ import org.openide.util.Utilities;
  */
 public class DownloadSeqRun extends AbstractAction {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public DownloadSeqRun() {
         super.putValue(NAME, "Download FASTA/FASTQ");
     }

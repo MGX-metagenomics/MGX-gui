@@ -15,6 +15,7 @@ import de.cebitec.mgx.gui.mapping.MappingCtx;
 import de.cebitec.mgx.gui.mapping.viewer.MappingViewerTopComponent;
 import de.cebitec.mgx.gui.wizard.mapping.MappingWizardWizardAction;
 import java.awt.event.ActionEvent;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +30,9 @@ import org.openide.util.Utilities;
  */
 public class OpenMappingBySeqRun extends OpenMappingBase {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     private Iterator<MappingI> mappings;
     private boolean hasData = false;
 

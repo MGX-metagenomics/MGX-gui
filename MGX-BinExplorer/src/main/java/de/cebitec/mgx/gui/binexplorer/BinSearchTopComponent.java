@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.model.assembly.BinSearchResultI;
 import de.cebitec.mgx.gui.binexplorer.util.BinSearchTableModel;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serial;
 import java.util.Collections;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
@@ -55,6 +56,9 @@ import org.openide.util.lookup.InstanceContent;
     "HINT_BinSearchTopComponent=Search gene annotations"
 })
 public final class BinSearchTopComponent extends TopComponent implements LookupListener, PropertyChangeListener {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private final Lookup.Result<BinI> binResult;
     private BinI currentBin = null;
@@ -229,7 +233,7 @@ public final class BinSearchTopComponent extends TopComponent implements LookupL
             if (searchText.length() >= 2) {
                 tableModel.update(currentBin, searchText);
             }
-            
+
             repaint();
         }
 

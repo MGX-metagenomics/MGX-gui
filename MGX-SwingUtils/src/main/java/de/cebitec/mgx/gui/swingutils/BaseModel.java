@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.swingutils;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -12,6 +13,9 @@ import javax.swing.event.ListDataEvent;
  * @author sjaenick
  */
 public abstract class BaseModel<T> extends AbstractListModel<T> implements ComboBoxModel<T> {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     protected final List<T> content = new ArrayList<>();
     // index of selected entry

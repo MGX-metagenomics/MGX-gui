@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.Serial;
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -12,6 +13,9 @@ import javax.swing.text.Document;
 
 public final class SeqRunVisualPanel1 extends JPanel implements DocumentListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     public static final String PROP_NAME = "name";
     public static final String PROP_SUBMITTED = "submitted_to_INSDC";
     public static final String PROP_ACCESSION = "accession";

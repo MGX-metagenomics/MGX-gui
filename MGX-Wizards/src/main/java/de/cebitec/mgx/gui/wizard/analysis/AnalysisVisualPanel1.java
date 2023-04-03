@@ -10,6 +10,7 @@ import de.cebitec.mgx.gui.wizard.analysis.misc.ToolPanel;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serial;
 import java.util.Collection;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -25,6 +26,9 @@ import javax.swing.event.ListSelectionListener;
 
 public final class AnalysisVisualPanel1 extends JPanel implements ListSelectionListener, ChangeListener {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+    
     //private final MGXMasterI master;
     /**
      * Creates new form AnalysisVisualPanel1

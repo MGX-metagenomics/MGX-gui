@@ -10,6 +10,7 @@ import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.gui.swingutils.BaseModel;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -21,6 +22,9 @@ import org.openide.util.Exceptions;
  * @author sjaenick
  */
 public class ReadModel extends BaseModel<SequenceI> {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private SeqRunI run;
     private String term;
@@ -41,7 +45,7 @@ public class ReadModel extends BaseModel<SequenceI> {
         }
         clear();
 
-        List<SequenceI> tmp  = new ArrayList<>();
+        List<SequenceI> tmp = new ArrayList<>();
         MGXMasterI master = run.getMaster();
         if (!master.isDeleted()) {
             Iterator<SequenceI> iter = null;

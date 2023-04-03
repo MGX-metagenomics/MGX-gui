@@ -1,7 +1,6 @@
 package de.cebitec.mgx.gui.charts.basic.customizer;
 
 import de.cebitec.mgx.api.groups.GroupI;
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.misc.Pair;
 import de.cebitec.mgx.api.model.AttributeTypeI;
@@ -9,6 +8,7 @@ import de.cebitec.mgx.gui.vizfilter.SortOrder;
 import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
+import java.io.Serial;
 import java.util.List;
 
 /**
@@ -16,6 +16,9 @@ import java.util.List;
  * @author sjaenick
  */
 public class XYPlotCustomizer extends javax.swing.JPanel implements VisFilterI<DistributionI<Long>, DistributionI<Double>> {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private AttributeTypeI at;
 

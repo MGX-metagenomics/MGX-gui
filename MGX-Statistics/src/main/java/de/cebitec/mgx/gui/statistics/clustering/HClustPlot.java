@@ -126,7 +126,7 @@ public class HClustPlot extends AbstractViewer<DistributionI<Long>> implements C
     }
 
     @Override
-    public Class getInputType() {
+    public Class<?> getInputType() {
         return DistributionI.class;
     }
 

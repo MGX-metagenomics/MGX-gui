@@ -176,7 +176,7 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
             case "ConfigDouble":
                 return new Pair<>(new TextFieldPanel(), new DoubleValidator());
             case "ConfigEnumeration`1":
-                return new Pair<>(new ComboBoxPanel(jp, jp.getChoices().keySet()), new MultipleChoiceValidator(jp));
+                return new Pair<>(new ComboBoxPanel(jp, jp.getChoices().keySet()), new MultipleChoiceValidator<>(jp));
             case "ConfigFile":
                 return new Pair<>(new FileChooserPanel(master), new FilenameValidator());
             case "ConfigInteger":
@@ -186,7 +186,7 @@ public class AnalysisWizardPanel2 implements WizardDescriptor.Panel<WizardDescri
             case "ConfigSByte":
                 return new Pair<>(new TextFieldPanel(), new SByteValidator());
             case "ConfigSelection`2":
-                return new Pair<>(new ComboBoxPanel(jp, jp.getChoices().keySet()), new MultipleChoiceValidator(jp));
+                return new Pair<>(new ComboBoxPanel(jp, jp.getChoices().keySet()), new MultipleChoiceValidator<>(jp));
             case "ConfigString":
                 return new Pair<>(new TextFieldPanel(), new StringValidator());
             case "ConfigULong":
