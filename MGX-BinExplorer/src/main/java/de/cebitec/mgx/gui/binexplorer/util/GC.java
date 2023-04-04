@@ -34,8 +34,10 @@ public class GC {
             switch (b) {
                 case 'G':
                     g++;
+                    break;
                 case 'C':
                     c++;
+                    break;
             }
         }
 
