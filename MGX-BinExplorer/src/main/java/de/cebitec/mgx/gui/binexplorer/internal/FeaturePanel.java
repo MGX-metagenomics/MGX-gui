@@ -145,7 +145,7 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
             AssembledRegionI selectedGene = vc.getSelectedRegion();
 
             // draw the region shapes
-            for (Arrow r : regs) {
+            for (Arrow<AssembledRegionI> r : regs) {
                 Color c = r.getColor();
                 if (r.getObject().equals(selectedGene)) {
                     c = Color.ORANGE;
