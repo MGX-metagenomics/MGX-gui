@@ -10,7 +10,7 @@ import de.cebitec.mgx.gui.datamodel.misc.Matrix;
  *
  * @author sj
  */
-public class MatrixDTOFactory extends DTOConversionBase<Matrix, AttributeCorrelation> {
+public class MatrixDTOFactory extends DTOConversionBase<Matrix<AttributeI, AttributeI>, AttributeCorrelation> {
 
     protected final static MatrixDTOFactory instance = new MatrixDTOFactory();
 
@@ -22,7 +22,7 @@ public class MatrixDTOFactory extends DTOConversionBase<Matrix, AttributeCorrela
     }
 
     @Override
-    public AttributeCorrelation toDTO(Matrix a) {
+    public AttributeCorrelation toDTO(Matrix<AttributeI, AttributeI> a) {
         throw new UnsupportedOperationException("Not supported.");
     }
 
