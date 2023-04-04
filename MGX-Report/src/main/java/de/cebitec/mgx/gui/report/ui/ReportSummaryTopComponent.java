@@ -717,7 +717,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
             pieChart.getStyler().setSumVisible(true);
             pieChart.getStyler().setAnnotationTextPanelFontColor(Color.BLACK);
 
-            XChartPanel chartPanel = new XChartPanel<>(pieChart);
+            XChartPanel<PieChart> chartPanel = new XChartPanel<>(pieChart);
 
             SortOrder<Long> sort = new SortOrder<>(Order.DESCENDING);
             LimitFilter<Long> limit = new LimitFilter<>(LIMITS.TOP10);
@@ -766,7 +766,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
                 cogchart.getStyler().setXAxisLabelRotation(45);
                 cogchart.getStyler().setAvailableSpaceFill(0.7);
 
-                XChartPanel xcp = new XChartPanel<>(cogchart);
+                XChartPanel<CategoryChart> xcp = new XChartPanel<>(cogchart);
 
                 SortOrder<Long> sort = new SortOrder<>(Order.DESCENDING);
                 LimitFilter<Long> limit = new LimitFilter<>(LIMITS.TOP10);
@@ -813,7 +813,7 @@ public final class ReportSummaryTopComponent extends TopComponent implements Loo
                 funcchart.getStyler().setStacked(true);
                 funcchart.getStyler().setAvailableSpaceFill(0.7);
 
-                XChartPanel xcp = new XChartPanel<>(funcchart);
+                XChartPanel<CategoryChart> xcp = new XChartPanel<>(funcchart);
 
                 List<String> funckeys = new ArrayList<>();
                 List<Long> funcval = new ArrayList<>();
