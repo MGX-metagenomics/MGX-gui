@@ -113,7 +113,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
     //
     private boolean isActivated = false;
     //
-    private final FastCategoryDataset coverageDataset = new FastCategoryDataset();
+    private final FastCategoryDataset<String> coverageDataset = new FastCategoryDataset<>();
     private final JFreeChart coverageChart;
     private final SVGChartPanel svgChartPanel;
     private final TLongObjectMap<String> runNames = new TLongObjectHashMap<>();
