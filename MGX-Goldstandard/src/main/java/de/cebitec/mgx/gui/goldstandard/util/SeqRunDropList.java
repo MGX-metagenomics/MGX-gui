@@ -34,11 +34,11 @@ public class SeqRunDropList extends JPanel implements DropTargetListener {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private final DefaultListModel listModel = new DefaultListModel<>();
+    private final DefaultListModel<SeqRunI> listModel = new DefaultListModel<>();
     private DropTarget dropTarget;
 //    private JLabel jLabel1;
 //    private JScrollPane jScrollPane1;
-    private JList<String> list;
+    private JList<SeqRunI> list;
 
     public SeqRunDropList() {
     }
@@ -46,8 +46,7 @@ public class SeqRunDropList extends JPanel implements DropTargetListener {
     @SuppressWarnings("unchecked")
     public void init() {
         //setLayout(null);
-        String[] obj = new String[]{"Hallo"};
-        list = new JList<>(obj);
+        list = new JList<>();
         list.setModel(listModel);
         dropTarget = new DropTarget(list, this);
         list.setDragEnabled(true);
@@ -165,7 +164,7 @@ class SeqRunListCellRenderer extends DefaultListCellRenderer {
 
     @Override
     public Component getListCellRendererComponent(
-            JList list,
+            JList<?> list,
             Object value,
             int index,
             boolean selected,

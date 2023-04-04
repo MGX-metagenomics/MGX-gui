@@ -105,10 +105,10 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
 
         controlSplitPane = new javax.swing.JSplitPane();
         jPanel1 = new javax.swing.JPanel();
-        comparisonTypeList = new javax.swing.JComboBox();
+        comparisonTypeList = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        visualizationTypeList = new javax.swing.JComboBox();
+        visualizationTypeList = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         updateButton = new javax.swing.JButton();
 
@@ -205,14 +205,14 @@ public class EvaluationControlPanel extends javax.swing.JPanel implements Action
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox comparisonTypeList;
+    private javax.swing.JComboBox<ComparisonTypeI> comparisonTypeList;
     private javax.swing.JSplitPane controlSplitPane;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JButton updateButton;
-    private javax.swing.JComboBox visualizationTypeList;
+    private javax.swing.JComboBox<EvaluationViewerI> visualizationTypeList;
     // End of variables declaration//GEN-END:variables
 
     @Override
