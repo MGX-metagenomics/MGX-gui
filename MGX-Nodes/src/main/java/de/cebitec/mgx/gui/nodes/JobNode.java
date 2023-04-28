@@ -11,6 +11,7 @@ import de.cebitec.mgx.common.JobState;
 import java.awt.Image;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.time.Duration;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import javax.swing.Action;
@@ -71,15 +72,14 @@ public class JobNode extends MGXNodeBase<JobI> {
     private String getProcessingTime(JobI job) {
         if (job.getStatus() == JobState.FINISHED) {
 
-            String timeUnit = "minutes";
             long time = getDateDiff(job.getFinishDate(), job.getStartDate(), TimeUnit.MINUTES);
 
-            if (time < 2) {
-                timeUnit = "seconds";
-                time = getDateDiff(job.getFinishDate(), job.getStartDate(), TimeUnit.SECONDS);
-            }
-
-            return "Processing time: " + time + " " + timeUnit + "<br>";
+            Duration duration = Duration.ofMinutes(time);
+            long hours = duration.toHours();
+            long mins = duration.minusHours(hours).toMinutes();
+            String formatted = String.format("%dhrs %02dmins", hours, mins);
+            
+            return "Processing time: " + formatted + "<br>";
         } else {
             return "";
         }
