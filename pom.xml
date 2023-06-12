@@ -15,7 +15,7 @@
     </scm>
     
     <properties>
-        <netbeans.version>RELEASE170</netbeans.version>
+        <netbeans.version>RELEASE180</netbeans.version>
         <brandingToken>mgx_gui</brandingToken>
     </properties>
 
