@@ -105,7 +105,7 @@ public final class AnalysisVisualPanel3 extends JPanel {
 
         @Override
         public Component getListCellRendererComponent(JList<? extends JobParameterI> list, JobParameterI jp, int index, boolean isSelected, boolean cellHasFocus) {
-            panel.setParameterName(jp.getDisplayName());
+            panel.setParameterName(jp.getParameterName());
             panel.setValue(jp.getParameterValue());
 
             // different handling for reference genomes..
