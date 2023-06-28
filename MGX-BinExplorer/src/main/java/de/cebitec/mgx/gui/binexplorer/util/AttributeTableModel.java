@@ -119,6 +119,8 @@ public class AttributeTableModel extends DefaultTableModel implements PropertyCh
             super.setRowCount(0);
             Exceptions.printStackTrace(ex);
         }
+        
+        fireTableDataChanged();
     }
 
     @Override
