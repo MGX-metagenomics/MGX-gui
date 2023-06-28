@@ -1,6 +1,7 @@
 package de.cebitec.mgx.gui.nodes;
 
 import de.cebitec.mgx.api.model.assembly.BinI;
+import java.awt.Image;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.Action;
@@ -18,8 +19,15 @@ public class BinNode extends MGXNodeBase<BinI> {
     public BinNode(BinI a) {
         super(Children.LEAF, Lookups.fixed(a.getMaster(), a), a);
         super.setDisplayName(a.getName());
-        //super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Habitat.png");
+        super.setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/Bin.png");
         super.setShortDescription(getToolTipText(a));
+    }
+
+    @Override
+    public Image getIcon(int type) {
+        Image image = super.getIcon(type);
+        Image scaledInstance = image.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+        return scaledInstance;
     }
 
     private String getToolTipText(BinI h) {
