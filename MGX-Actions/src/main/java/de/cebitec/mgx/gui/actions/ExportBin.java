@@ -39,7 +39,7 @@ public class ExportBin extends NodeAction implements LookupListener {
 
     @Serial
     private static final long serialVersionUID = 1L;
-    
+
     private final Lookup context;
     private Lookup.Result<BinI> lkpInfo;
 
@@ -130,6 +130,9 @@ public class ExportBin extends NodeAction implements LookupListener {
 
             if (fchooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 
+                // save directory
+                NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fchooser.getCurrentDirectory().getAbsolutePath());
+
                 final File target = fchooser.getSelectedFile();
                 if (target.exists()) {
                     // ask if file should be overwritten, else return
@@ -152,11 +155,16 @@ public class ExportBin extends NodeAction implements LookupListener {
                 ProgressHandle handle = ProgressHandle.createHandle("Export to " + target.getName());
                 handle.start(bin.getNumContigs());
                 final AtomicInteger numComplete = new AtomicInteger(0);
-                
+
                 MGXPool.getInstance().submit(new Runnable() {
                     @Override
                     public void run() {
                         try {
+                            // make sure we start with an empty file
+                            if (target.exists()) {
+                                target.delete();
+                            }
+
                             Iterator<ContigI> it = bin.getMaster().Contig().ByBin(bin);
                             while (it != null && it.hasNext()) {
                                 ContigI contig = it.next();
@@ -172,8 +180,6 @@ public class ExportBin extends NodeAction implements LookupListener {
                 });
 
             }
-
-            NbPreferences.forModule(JFileChooser.class).put("lastDirectory", fchooser.getCurrentDirectory().getAbsolutePath());
 
         }
     }
