@@ -28,4 +28,6 @@ public abstract class AssemblyI extends Identifiable<AssemblyI> {
     public abstract long getReadsAssembled();
 
     public abstract long getN50();
+    
+    public abstract long getNumberCDS();
 }

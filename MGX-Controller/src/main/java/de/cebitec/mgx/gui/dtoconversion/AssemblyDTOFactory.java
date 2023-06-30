@@ -38,6 +38,6 @@ public class AssemblyDTOFactory extends DTOConversionBase<AssemblyI, AssemblyDTO
 
     @Override
     public AssemblyI toModel(MGXMasterI m, AssemblyDTO dto) {
-        return new Assembly(m, dto.getId(), dto.getName(), dto.getReadsAssembled(), dto.getN50(), dto.getJobId());
+        return new Assembly(m, dto.getId(), dto.getName(), dto.getReadsAssembled(), dto.getN50(), dto.getTotalCds(), dto.getJobId());
     }
 }
