@@ -114,7 +114,7 @@ public class ContigViewController implements PropertyChangeListener, SequenceVie
 
     @Override
     public int getReferenceLength() {
-        return contig.getLength();
+        return contig != null ? contig.getLength() : 0;
     }
 
     @Override
