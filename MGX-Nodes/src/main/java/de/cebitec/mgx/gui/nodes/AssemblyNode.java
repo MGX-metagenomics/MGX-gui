@@ -44,7 +44,7 @@ public class AssemblyNode extends MGXNodeBase<AssemblyI> {
                 .append(NumberFormat.getInstance(Locale.US).format(h.getReadsAssembled()))
                 .append("<br>N50: ")
                 .append(NumberFormat.getInstance(Locale.US).format(h.getN50()))
-                .append("<br>CDS: ")
+                .append(" bp<br>CDS: ")
                 .append(NumberFormat.getInstance(Locale.US).format(h.getNumberCDS()))
                 .append("</html>").toString();
 
