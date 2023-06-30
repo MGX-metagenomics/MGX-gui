@@ -232,6 +232,9 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
                 }
             }
         }
+        if (vc.getReferenceName() == null) {
+            return "<html><b>Contig: </b>N/A</html>";
+        }
         return "<html><b>Contig: </b>" + vc.getReferenceName() + "<br><hr><br>"
                 + "Length: "
                 + nf.format(vc.getReferenceLength()) + " bp</html>";
