@@ -36,8 +36,6 @@ public class AssemblyNode extends MGXNodeBase<AssemblyI> {
         return scaledInstance;
     }
 
-
-
     private String getToolTipText(AssemblyI h) {
         return new StringBuilder("<html>").append("<b>Assembly: </b>")
                 .append(escapeHtml4(h.getName()))
@@ -46,7 +44,10 @@ public class AssemblyNode extends MGXNodeBase<AssemblyI> {
                 .append(NumberFormat.getInstance(Locale.US).format(h.getReadsAssembled()))
                 .append("<br>N50: ")
                 .append(NumberFormat.getInstance(Locale.US).format(h.getN50()))
-                .append(" bp</html>").toString();
+                .append("<br>CDS: ")
+                .append(NumberFormat.getInstance(Locale.US).format(h.getNumberCDS()))
+                .append("</html>").toString();
+
     }
 
     @Override
