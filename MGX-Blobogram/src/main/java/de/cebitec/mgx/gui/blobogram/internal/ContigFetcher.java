@@ -41,11 +41,12 @@ public class ContigFetcher implements Runnable {
     @Override
     public void run() {
         ph.start();
-        ph.switchToIndeterminate();
+        ph.switchToDeterminate(bin.getNumContigs());
 
         XYSeries series = new XYSeries(bin.getName());
         series.setNotify(false);
 
+        int numElements = 0;
         Iterator<ContigI> contigIter;
         try {
             contigIter = bin.getMaster().Contig().ByBin(bin);
@@ -60,6 +61,11 @@ public class ContigFetcher implements Runnable {
             ContigI c = contigIter.next();
             XYDataItem item = new ContigItem(bin, c);
             series.add(item, false);
+            numElements++;
+            
+            if (numElements % 50 == 0) {
+                ph.progress(numElements);
+            }
         }
         series.setNotify(true);
         cache.put(bin, series);
