@@ -61,14 +61,14 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
                 <!--
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                                -->
+<executions>
+    <execution>
+        <goals>
+            <goal>manifest</goal>
+        </goals>
+    </execution>
+</executions>
+                -->
                 <configuration>
                     <instructions>
                         <Export-Package>

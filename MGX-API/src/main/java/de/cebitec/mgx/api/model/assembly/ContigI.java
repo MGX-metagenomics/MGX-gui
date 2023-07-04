@@ -7,18 +7,32 @@ package de.cebitec.mgx.api.model.assembly;
 
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.model.Identifiable;
-import java.awt.datatransfer.DataFlavor;
 
 /**
  *
  * @author sj
  */
-public abstract class ContigI extends Identifiable<ContigI> {
+public abstract class ContigI implements Comparable<ContigI> { //extends Identifiable<ContigI> {
 
-    public static final DataFlavor DATA_FLAVOR = new DataFlavor(ContigI.class, "ContigI");
+    //public static final DataFlavor DATA_FLAVOR = new DataFlavor(ContigI.class, "ContigI");
+    protected long id = Identifiable.INVALID_IDENTIFIER;
+    private final MGXMasterI master;
 
     public ContigI(MGXMasterI m) {
-        super(m, DATA_FLAVOR);
+        //super(m, DATA_FLAVOR);
+        this.master = m;
+    }
+
+    public final MGXMasterI getMaster() {
+        return master;
+    }
+
+    public final void setId(long id) {
+        this.id = id;
+    }
+
+    public final long getId() {
+        return id;
     }
 
     public abstract String getName();

@@ -16,6 +16,10 @@ import java.util.Iterator;
  * @author sj
  */
 public interface ContigAccessI {
+    
+    public ContigI fetch(long id) throws MGXException;
+    
+    public Iterator<ContigI> fetchall() throws MGXException;
 
     public Iterator<ContigI> ByBin(BinI bin) throws MGXException;
     
