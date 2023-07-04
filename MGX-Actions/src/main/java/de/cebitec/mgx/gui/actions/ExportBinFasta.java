@@ -82,7 +82,7 @@ public class ExportBinFasta extends NodeAction implements LookupListener {
 
     @Override
     public String getName() {
-        return "Export to GenBank";
+        return "Export to FASTA";
     }
 
     @Override
