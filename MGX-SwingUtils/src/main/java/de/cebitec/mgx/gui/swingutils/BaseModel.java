@@ -48,10 +48,15 @@ public abstract class BaseModel<T> extends AbstractListModel<T> implements Combo
     public void addAll(Collection<T> items) {
         if (items != null && !items.isEmpty()) {
             synchronized (content) {
-                for (T t : items) {
-                    if (!content.contains(t)) {
-                        content.add(t);
+                if (!content.isEmpty()) {
+                    for (T t : items) {
+                        if (!content.contains(t)) {
+                            content.add(t);
+                        }
                     }
+                } else {
+                    // content is empty, no check for duplicates required
+                    content.addAll(items);
                 }
             }
             fireContentsChanged();
