@@ -9,12 +9,11 @@ import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import java.io.Serial;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
+import org.netbeans.api.progress.ProgressHandle;
 import org.openide.util.Exceptions;
 
 /**
@@ -39,25 +38,28 @@ public class ContigListModel extends BaseModel<ContigI> {
             return;
         }
 
+        final ProgressHandle ph = ProgressHandle.createHandle("Fetching contigs for " + bin.getName());
+        ph.start();
+        ph.switchToDeterminate(bin.getNumContigs());
+
         SwingWorker<List<ContigI>, Void> sw = new SwingWorker<List<ContigI>, Void>() {
             @Override
             protected List<ContigI> doInBackground() throws Exception {
-                List<ContigI> tmp = new ArrayList<>();
+                int numElements = 0;
+                List<ContigI> tmp = new ArrayList<>(bin.getNumContigs());
 
                 Iterator<ContigI> iter = bin.getMaster().Contig().ByBin(bin);
                 while (iter != null && iter.hasNext()) {
                     tmp.add(iter.next());
+                    numElements++;
+
+                    if (numElements % 500 == 0) {
+                        ph.progress(numElements);
+                    }
                 }
 
-                // sort by contig length, descending
-                Collections.sort(tmp, new Comparator<ContigI>() {
-                    @Override
-                    public int compare(ContigI t1, ContigI t2) {
-                        return Integer.compare(t2.getLength(), t1.getLength());
-                    }
-
-                });
-
+                // we dont need to sort here, as the server delivers the data
+                // presorted by length descending
                 return tmp;
             }
 
@@ -70,6 +72,10 @@ public class ContigListModel extends BaseModel<ContigI> {
                     Exceptions.printStackTrace(ex);
                     return;
                 }
+
+                ph.progress(bin.getNumContigs());
+                ph.finish();
+
                 addAll(data);
                 if (!data.isEmpty()) {
                     setSelectedItem(data.get(0));
