@@ -105,16 +105,18 @@ public class FeaturePanel extends PanelBase<ContigViewController> implements Mou
             separate += 500;
         }
 
-        int firstpos = bounds[0];
-        while (firstpos % separate != 0) {
-            firstpos++;
-        }
-        for (int i = firstpos; i < bounds[1]; i += separate) {
-            float pos = bp2px(i);
-            g2.drawLine((int) pos, midY - 3, (int) pos, midY + 3);
-            String text1 = String.valueOf(i);
-            g2.drawString(text1, (int) pos - textWidth(g2, text1) / 2, midY + 13);
-            //}
+        if (bounds != null) {
+            int firstpos = bounds[0];
+            while (firstpos % separate != 0) {
+                firstpos++;
+            }
+            for (int i = firstpos; i < bounds[1]; i += separate) {
+                float pos = bp2px(i);
+                g2.drawLine((int) pos, midY - 3, (int) pos, midY + 3);
+                String text1 = String.valueOf(i);
+                g2.drawString(text1, (int) pos - textWidth(g2, text1) / 2, midY + 13);
+                //}
+            }
         }
 
         synchronized (regs) {
