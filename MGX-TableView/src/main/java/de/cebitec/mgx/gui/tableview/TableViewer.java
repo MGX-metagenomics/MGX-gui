@@ -19,6 +19,7 @@ import de.cebitec.mgx.gui.viewer.api.ViewerI;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
 import de.cebitec.mgx.gui.vizfilter.SortOrder;
 import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
@@ -139,7 +140,16 @@ public class TableViewer extends AbstractViewer<DistributionI<Long>> implements 
 
         cust.setModel(model); // for tsv export
 
-        table = new JXTable(model);
+        table = new JXTable(model) {
+            
+            //
+            // # 162 -ignore setPreferredSize() so scrollbars work
+            //
+            @Override
+            public void setPreferredSize(Dimension preferredSize) {
+            }
+        
+        };
         table.setDefaultRenderer(Double.class, new DecimalFormatRenderer());
         table.setFillsViewportHeight(true);
         for (TableColumn tc : table.getColumns()) {
