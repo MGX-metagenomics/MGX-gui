@@ -60,7 +60,7 @@ public class MappingAccess extends MasterHolder implements MappingAccessI {
     @Override
     public Iterator<MappingI> fetchall() throws MGXException {
         try {
-            Iterator<MappingDTO> fetchall = getDTOmaster().Mapping().fetchall();
+            Iterator<MappingDTO> fetchall = getDTOmaster().Mapping().fetchall().getMappingList().iterator();
             return new BaseIterator<MappingDTO, MappingI>(fetchall) {
                 @Override
                 public MappingI next() {

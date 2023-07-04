@@ -63,7 +63,7 @@ public class ReferenceAccess extends MasterHolder implements ReferenceAccessI {
         try {
 
             return new Iterator<MGXReferenceI>() {
-                final Iterator<ReferenceDTO> iter = getDTOmaster().Reference().fetchall();
+                final Iterator<ReferenceDTO> iter = getDTOmaster().Reference().fetchall().getReferenceList().iterator();
 
                 @Override
                 public boolean hasNext() {

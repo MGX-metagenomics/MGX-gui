@@ -78,7 +78,7 @@ public class HabitatAccess extends AccessBase<HabitatI> implements HabitatAccess
     @Override
     public Iterator<HabitatI> fetchall() throws MGXException {
         try {
-            Iterator<HabitatDTO> fetchall = getDTOmaster().Habitat().fetchall();
+            Iterator<HabitatDTO> fetchall = getDTOmaster().Habitat().fetchall().getHabitatList().iterator();
             return new BaseIterator<HabitatDTO, HabitatI>(fetchall) {
                 @Override
                 public HabitatI next() {

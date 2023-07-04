@@ -84,7 +84,7 @@ public class DNAExtractAccess extends AccessBase<DNAExtractI> implements DNAExtr
         try {
 
             return new Iterator<DNAExtractI>() {
-                final Iterator<DNAExtractDTO> iter = getDTOmaster().DNAExtract().fetchall();
+                final Iterator<DNAExtractDTO> iter = getDTOmaster().DNAExtract().fetchall().getExtractList().iterator();
 
                 @Override
                 public boolean hasNext() {

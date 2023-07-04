@@ -67,7 +67,7 @@ public class AttributeTypeAccess extends MasterHolder implements AttributeTypeAc
     public Iterator<AttributeTypeI> fetchall() throws MGXException {
         Iterator<AttributeTypeDTO> it;
         try {
-            it = getDTOmaster().AttributeType().fetchall();
+            it = getDTOmaster().AttributeType().fetchall().getAttributeTypeList().iterator();
         } catch (MGXClientLoggedOutException mcle) {
             throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {

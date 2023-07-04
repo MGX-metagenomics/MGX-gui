@@ -205,7 +205,7 @@ public class JobAccess extends MasterHolder implements JobAccessI {
     @Override
     public Iterator<JobI> fetchall() throws MGXException {
         try {
-            Iterator<JobDTO> fetchall = getDTOmaster().Job().fetchall();
+            Iterator<JobDTO> fetchall = getDTOmaster().Job().fetchall().getJobList().iterator();
 
             return new BaseIterator<JobDTO, JobI>(fetchall) {
                 @Override

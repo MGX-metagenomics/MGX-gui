@@ -48,7 +48,7 @@ public class BinAccess extends AccessBase<BinI> implements BinAccessI {
     public Iterator<BinI> fetchall() throws MGXException {
         Iterator<BinDTO> it;
         try {
-            it = getDTOmaster().Bin().fetchall();
+            it = getDTOmaster().Bin().fetchall().getBinList().iterator();
         } catch (MGXClientLoggedOutException mcle) {
             throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {

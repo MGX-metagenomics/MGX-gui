@@ -8,7 +8,6 @@ package de.cebitec.mgx.gui.controller.assembly;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.api.exception.MGXException;
 import de.cebitec.mgx.api.exception.MGXLoggedoutException;
-import de.cebitec.mgx.api.misc.TaskI;
 import de.cebitec.mgx.api.model.SequenceI;
 import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
@@ -17,18 +16,20 @@ import de.cebitec.mgx.client.MGXDTOMaster;
 import de.cebitec.mgx.client.exception.MGXClientLoggedOutException;
 import de.cebitec.mgx.client.exception.MGXDTOException;
 import de.cebitec.mgx.dto.dto.ContigDTO;
+import de.cebitec.mgx.dto.dto.ContigDTOList;
 import de.cebitec.mgx.dto.dto.SequenceDTO;
-import de.cebitec.mgx.gui.controller.AccessBase;
+import de.cebitec.mgx.gui.controller.MasterHolder;
 import de.cebitec.mgx.gui.dtoconversion.ContigDTOFactory;
 import de.cebitec.mgx.gui.dtoconversion.SequenceDTOFactory;
-import de.cebitec.mgx.gui.util.BaseIterator;
+import de.cebitec.mgx.gui.util.ChunkedContigIterator;
 import java.util.Iterator;
+import java.util.UUID;
 
 /**
  *
  * @author sj
  */
-public class ContigAccess extends AccessBase<ContigI> implements ContigAccessI {
+public class ContigAccess extends MasterHolder implements ContigAccessI {//extends AccessBase<ContigI> implements ContigAccessI {
 
     public ContigAccess(MGXMasterI master, MGXDTOMaster dtomaster) throws MGXException {
         super(master, dtomaster);
@@ -49,38 +50,54 @@ public class ContigAccess extends AccessBase<ContigI> implements ContigAccessI {
 
     @Override
     public Iterator<ContigI> fetchall() throws MGXException {
-        Iterator<ContigDTO> it;
+        ContigDTOList dto;
         try {
-            it = getDTOmaster().Contig().fetchall();
+            dto = getDTOmaster().Contig().fetchall();
         } catch (MGXClientLoggedOutException mcle) {
             throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
-        return new BaseIterator<ContigDTO, ContigI>(it) {
+
+        return new ChunkedContigIterator(getMaster(), dto) {
+
             @Override
-            public ContigI next() {
-                return ContigDTOFactory.getInstance().toModel(getMaster(), iter.next());
+            public ContigDTOList nextChunk() throws MGXException {
+                return continueSession(UUID.fromString(currentChunk().getUuid()));
             }
+
         };
     }
 
     @Override
     public Iterator<ContigI> ByBin(BinI bin) throws MGXException {
-        Iterator<ContigDTO> it;
+        ContigDTOList dto;
         try {
-            it = getDTOmaster().Contig().byBin(bin.getId());
+            dto = getDTOmaster().Contig().byBin(bin.getId());
         } catch (MGXClientLoggedOutException mcle) {
             throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {
             throw new MGXException(ex);
         }
-        return new BaseIterator<ContigDTO, ContigI>(it) {
+
+        return new ChunkedContigIterator(getMaster(), dto) {
+
             @Override
-            public ContigI next() {
-                return ContigDTOFactory.getInstance().toModel(getMaster(), iter.next());
+            public ContigDTOList nextChunk() throws MGXException {
+                return continueSession(UUID.fromString(currentChunk().getUuid()));
             }
+
         };
+    }
+
+    private ContigDTOList continueSession(UUID sessionId) throws MGXException {
+        try {
+            return getDTOmaster().Contig().continueSession(sessionId);
+        } catch (MGXClientLoggedOutException mcle) {
+            throw new MGXLoggedoutException(mcle);
+        } catch (MGXDTOException ex) {
+            throw new MGXException(ex);
+        }
     }
 
     @Override
@@ -95,13 +112,13 @@ public class ContigAccess extends AccessBase<ContigI> implements ContigAccessI {
         }
     }
 
-    @Override
-    public void update(ContigI obj) throws MGXException {
-        throw new UnsupportedOperationException("Not supported.");
-    }
-
-    @Override
-    public TaskI<ContigI> delete(ContigI obj) throws MGXException {
-        throw new UnsupportedOperationException("Not supported.");
-    }
+//    @Override
+//    public void update(ContigI obj) throws MGXException {
+//        throw new UnsupportedOperationException("Not supported.");
+//    }
+//
+//    @Override
+//    public TaskI<ContigI> delete(ContigI obj) throws MGXException {
+//        throw new UnsupportedOperationException("Not supported.");
+//    }
 }

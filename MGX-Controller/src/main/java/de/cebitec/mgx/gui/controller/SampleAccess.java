@@ -81,7 +81,7 @@ public class SampleAccess extends AccessBase<SampleI> implements SampleAccessI {
     @Override
     public Iterator<SampleI> fetchall() throws MGXException {
         try {
-            Iterator<SampleDTO> fetchall = getDTOmaster().Sample().fetchall();
+            Iterator<SampleDTO> fetchall = getDTOmaster().Sample().fetchall().getSampleList().iterator();
             return new BaseIterator<SampleDTO, SampleI>(fetchall) {
                 @Override
                 public SampleI next() {

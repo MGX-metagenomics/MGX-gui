@@ -147,7 +147,7 @@ public class ToolAccess extends MasterHolder implements ToolAccessI {
     @Override
     public Iterator<ToolI> fetchall() throws MGXException {
         try {
-            Iterator<ToolDTO> fetchall = getDTOmaster().Tool().fetchall();
+            Iterator<ToolDTO> fetchall = getDTOmaster().Tool().fetchall().getToolList().iterator();
             return new BaseIterator<ToolDTO, ToolI>(fetchall) {
                 @Override
                 public ToolI next() {

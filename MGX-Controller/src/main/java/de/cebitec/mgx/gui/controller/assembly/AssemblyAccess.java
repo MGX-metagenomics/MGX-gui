@@ -49,7 +49,7 @@ public class AssemblyAccess extends AccessBase<AssemblyI> implements AssemblyAcc
     public Iterator<AssemblyI> fetchall() throws MGXException {
         Iterator<AssemblyDTO> it;
         try {
-            it = getDTOmaster().Assembly().fetchall();
+            it = getDTOmaster().Assembly().fetchall().getAssemblyList().iterator();
         } catch (MGXClientLoggedOutException mcle) {
             throw new MGXLoggedoutException(mcle);
         } catch (MGXDTOException ex) {

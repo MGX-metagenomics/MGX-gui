@@ -102,7 +102,7 @@ public class SeqRunAccess extends AccessBase<SeqRunI> implements SeqRunAccessI {
     @Override
     public Iterator<SeqRunI> fetchall() throws MGXException {
         try {
-            Iterator<SeqRunDTO> fetchall = getDTOmaster().SeqRun().fetchall();
+            Iterator<SeqRunDTO> fetchall = getDTOmaster().SeqRun().fetchall().getSeqrunList().iterator();
             return new BaseIterator<SeqRunDTO, SeqRunI>(fetchall) {
                 @Override
                 public SeqRunI next() {

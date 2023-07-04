@@ -67,7 +67,7 @@ public class FileAccess extends MasterHolder implements FileAccessI {
     @Override
     public Iterator<MGXFileI> fetchall(final MGXFileI curDir) throws MGXException {
         try {
-            Iterator<FileDTO> fetchall = getDTOmaster().File().fetchall(curDir.getFullPath());
+            Iterator<FileDTO> fetchall = getDTOmaster().File().fetchall(curDir.getFullPath()).getFileList().iterator();
             return new BaseIterator<FileDTO, MGXFileI>(fetchall) {
                 @Override
                 public MGXFileI next() {
