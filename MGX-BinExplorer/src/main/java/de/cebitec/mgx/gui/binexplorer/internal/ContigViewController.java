@@ -48,6 +48,10 @@ public class ContigViewController implements PropertyChangeListener, SequenceVie
         this.bin = b;
 
         if (prev != bin) {
+            if (prev != null) {
+                prev.removePropertyChangeListener(this);
+            }
+            bin.addPropertyChangeListener(this);
             pcs.firePropertyChange(BIN_SELECTED, prev, bin);
         }
 
@@ -59,7 +63,7 @@ public class ContigViewController implements PropertyChangeListener, SequenceVie
     }
 
     public void setContig(ContigI contig) {
-
+        
         ContigI prev = this.contig;
 
         if (contig != null && contig.equals(this.contig)) {
@@ -68,7 +72,6 @@ public class ContigViewController implements PropertyChangeListener, SequenceVie
         }
 
         if (this.contig != null) {
-            this.contig.removePropertyChangeListener(this);
             this.contig = null;
         }
 
@@ -77,7 +80,6 @@ public class ContigViewController implements PropertyChangeListener, SequenceVie
 
         if (contig != null) {
             this.contig = contig;
-            contig.addPropertyChangeListener(this);
 
             curBounds = new int[]{0, FastMath.min(15000, contig.getLength() - 1)};
             newBounds = new int[]{0, FastMath.min(15000, contig.getLength() - 1)};
@@ -135,8 +137,12 @@ public class ContigViewController implements PropertyChangeListener, SequenceVie
 
     @Override
     public synchronized void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getSource().equals(contig) && evt.getPropertyName().equals(ContigI.OBJECT_DELETED)) {
-            contig.removePropertyChangeListener(this);
+        // contigs don't support propertychanges, therefore we subscribe
+        // to the bin; if the bin gets deleted, the contig can no longer
+        // be valid, too
+        if (evt.getSource().equals(bin) && evt.getPropertyName().equals(BinI.OBJECT_DELETED)) {
+            bin.removePropertyChangeListener(this);
+            bin = null;
             contig = null;
             curBounds[0] = 0;
             curBounds[1] = 0;
@@ -187,7 +193,7 @@ public class ContigViewController implements PropertyChangeListener, SequenceVie
         if (contig == null) {
             return null;
         }
-        
+
         if (contigDNASequence == null) {
             try {
                 contigDNASequence = contig.getMaster().Contig().getDNASequence(contig).getSequence().toUpperCase();
