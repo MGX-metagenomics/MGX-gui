@@ -47,12 +47,14 @@
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-VisualizationGroups</artifactId>
-            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>de.cebitec.mgx.gui</groupId>
             <artifactId>MGX-DataFactories</artifactId>
-            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-netbeans-api-progress</artifactId>
         </dependency>
     </dependencies>
 
