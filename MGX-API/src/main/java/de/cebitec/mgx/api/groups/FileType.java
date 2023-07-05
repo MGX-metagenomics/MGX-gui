@@ -10,6 +10,7 @@ public enum FileType {
     JPEG("JPEG image (.jpg)", "jpg", "jpeg"),
     SVG("Scalable Vector Graphics (.svg)", "svg"),
     FAS("FASTA format (.fas)", "fas", "fna", "fa", "fasta"),
+    FAA("Amino-acid FASTA format (.faa)", "faa"),
     SFF("Standard flowgram format (.sff)", "sff"),
     FASGZ("Compressed FASTA format (.fas.gz)", "fas.gz", "fna.gz", "fa.gz", "fasta.gz"),
     FASTQ("FASTQ format (.fastq, .fq)", "fastq", "fq"),
