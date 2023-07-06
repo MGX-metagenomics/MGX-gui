@@ -117,7 +117,9 @@ public class LoginHandler implements ActionListener {
                     while (errorMsg.contains("Exception:")) {
                         errorMsg = errorMsg.substring(errorMsg.indexOf("Exception:") + 11);
                     }
-                    LOG.log(Level.SEVERE, null, ex);
+                    if (!"Wrong username/password".equals(errorMsg)) {
+                        LOG.log(Level.SEVERE, null, ex);
+                    }
 
                 }
                 if (loggedIn) {
