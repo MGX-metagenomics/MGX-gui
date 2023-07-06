@@ -517,6 +517,7 @@ public final class BinExplorerTopComponent extends TopComponent implements Looku
 
         if (evt.getPropertyName().equals(ContigViewController.BIN_SELECTED)) {
             BinI bin = vc.getSelectedBin();
+            contigListModel.clear();
             contigListModel.setBin(bin);
             contigListModel.update();
 

@@ -89,6 +89,12 @@ public class ContigListModel extends BaseModel<ContigI> {
 
     }
 
+    @Override
+    public void clear() {
+        this.bin = null;
+        super.clear();
+    }
+
     public int findIndexByID(long id) {
         for (ContigI c : content) {
             if (c.getId() == id) {

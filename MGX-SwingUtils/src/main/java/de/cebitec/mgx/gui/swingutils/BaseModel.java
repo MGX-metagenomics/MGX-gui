@@ -101,7 +101,7 @@ public abstract class BaseModel<T> extends AbstractListModel<T> implements Combo
         fireContentsChanged(e, -1, -1);
     }
 
-    public final void clear() {
+    public void clear() {
         synchronized (content) {
             if (!content.isEmpty()) {
                 content.clear();
