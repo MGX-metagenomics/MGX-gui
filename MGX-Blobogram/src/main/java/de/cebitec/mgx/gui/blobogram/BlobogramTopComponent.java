@@ -253,6 +253,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
                     allProcessed.await();
                 } catch (InterruptedException ex) {
                     Exceptions.printStackTrace(ex);
+                    dataset.removeAllSeries();
                     updateLock.release();
                     return;
                 }
@@ -270,6 +271,7 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
 
                 currentPanel = new SVGChartPanel(chart);
                 currentPanel.setDisplayToolTips(true);
+
                 XYPlot plot = (XYPlot) chart.getPlot();
                 plot.setBackgroundPaint(Color.WHITE);
                 plot.setRenderer(renderer);
@@ -279,6 +281,11 @@ public final class BlobogramTopComponent extends TopComponent implements LookupL
                 plot.setRangeAxis(rangeAxis);
 
                 chart.getRenderingHints().put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // #163; reset zoom on update
+                currentPanel.restoreAutoBounds();
+                rangeAxis.setAutoRange(true);
+                plot.getDomainAxis().setAutoRange(true);
 
                 content.set(Collections.emptyList(), null);
                 content.add(JFreeChartUtil.getImageExporter(chart));
