@@ -78,7 +78,7 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
     }
 
     void setAttributeType(final AttributeTypeI aType) {
-        if (aType.equals(at)) {
+        if (aType == null || aType.equals(at)) {
             return;
         }
         at = aType;
@@ -121,6 +121,7 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
         treeFilter1 = new de.cebitec.mgx.gui.swingutils.TreeFilterUI();
         filterField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
+        showLineage = new javax.swing.JCheckBox();
 
         org.openide.awt.Mnemonics.setLocalizedText(export, org.openide.util.NbBundle.getMessage(TableViewCustomizer.class, "TableViewCustomizer.export.text")); // NOI18N
         export.setEnabled(false);
@@ -139,11 +140,19 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
 
         fractions.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(fractions, org.openide.util.NbBundle.getMessage(TableViewCustomizer.class, "TableViewCustomizer.fractions.text")); // NOI18N
+        fractions.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fractionsActionPerformed(evt);
+            }
+        });
 
         filterField.setText(org.openide.util.NbBundle.getMessage(TableViewCustomizer.class, "TableViewCustomizer.filterField.text")); // NOI18N
 
         jLabel1.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(TableViewCustomizer.class, "TableViewCustomizer.jLabel1.text")); // NOI18N
+
+        showLineage.setFont(new java.awt.Font("Dialog", 0, 10)); // NOI18N
+        org.openide.awt.Mnemonics.setLocalizedText(showLineage, org.openide.util.NbBundle.getMessage(TableViewCustomizer.class, "TableViewCustomizer.showLineage.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -159,10 +168,12 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
                             .addComponent(export)
                             .addComponent(includeHeaders)
                             .addComponent(jLabel4))
-                        .addContainerGap(18, Short.MAX_VALUE))
+                        .addContainerGap(39, Short.MAX_VALUE))
                     .addComponent(filterField)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(showLineage))
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
@@ -172,7 +183,9 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
                 .addComponent(includeHeaders)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fractions)
-                .addGap(6, 6, 6)
+                .addGap(5, 5, 5)
+                .addComponent(showLineage)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(treeFilter1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -180,7 +193,7 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(filterField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
                 .addComponent(export)
                 .addContainerGap())
         );
@@ -261,6 +274,11 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
             }
         }
     }//GEN-LAST:event_exportActionPerformed
+
+    private void fractionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fractionsActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fractionsActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton export;
     private javax.swing.JTextField filterField;
@@ -268,7 +286,16 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
     private javax.swing.JCheckBox includeHeaders;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JCheckBox showLineage;
     private de.cebitec.mgx.gui.swingutils.TreeFilterUI treeFilter1;
     // End of variables declaration//GEN-END:variables
+
+    boolean showLineage() {
+        return showLineage.isEnabled() && showLineage.isSelected();
+    }
+
+    void enableLineageSelection(boolean enable) {
+        showLineage.setEnabled(enable);
+    }
 
 }

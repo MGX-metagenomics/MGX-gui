@@ -1,5 +1,6 @@
 package de.cebitec.mgx.gui.tableview;
 
+import de.cebitec.mgx.api.groups.ConflictingJobsException;
 import de.cebitec.mgx.api.groups.FileType;
 import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.gui.swingutils.DecimalFormatRenderer;
@@ -11,11 +12,14 @@ import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.assembly.AssembledSeqRunI;
+import de.cebitec.mgx.api.model.tree.NodeI;
+import de.cebitec.mgx.api.model.tree.TreeI;
 import de.cebitec.mgx.api.visualization.filter.VisFilterI;
 import de.cebitec.mgx.gui.seqexporter.SeqExporter;
 import de.cebitec.mgx.gui.viewer.api.AbstractViewer;
 import de.cebitec.mgx.gui.viewer.api.CustomizableI;
 import de.cebitec.mgx.gui.viewer.api.ViewerI;
+import de.cebitec.mgx.gui.visgroups.VGroupManager;
 import de.cebitec.mgx.gui.vizfilter.LongToDouble;
 import de.cebitec.mgx.gui.vizfilter.SortOrder;
 import de.cebitec.mgx.gui.vizfilter.ToFractionFilter;
@@ -26,8 +30,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
@@ -37,10 +43,12 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import org.apache.pdfbox.contentstream.operator.text.NextLine;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.jfree.svg.SVGGraphics2D;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -52,7 +60,8 @@ public class TableViewer extends AbstractViewer<DistributionI<Long>> implements 
 
     private JXTable table;
     private TableViewCustomizer cust = null;
-    List<Pair<GroupI, DistributionI<Double>>> dists;
+    private List<Pair<GroupI, DistributionI<Double>>> dists;
+    private AttributeTypeI curAttrType;
 
     @Override
     public JComponent getComponent() {
@@ -66,6 +75,8 @@ public class TableViewer extends AbstractViewer<DistributionI<Long>> implements 
 
     @Override
     public boolean canHandle(AttributeTypeI valueType) {
+        curAttrType = valueType;
+        getCust().enableLineageSelection(curAttrType.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL);
         return true;
     }
 
@@ -102,6 +113,44 @@ public class TableViewer extends AbstractViewer<DistributionI<Long>> implements 
             allAttrs.addAll(p.getSecond().keySet());
         }
 
+        Map<AttributeI, String> lineages = new HashMap<>();
+        if (getCust().showLineage() && curAttrType.getStructure() == AttributeTypeI.STRUCTURE_HIERARCHICAL) {
+
+            List<Pair<GroupI, TreeI<Long>>> hierarchies;
+            try {
+                hierarchies = VGroupManager.getInstance().getHierarchies();
+            } catch (ConflictingJobsException ex) {
+                Exceptions.printStackTrace(ex);
+                return;
+            }
+
+            for (AttributeI attr : allAttrs) {
+                for (Pair<GroupI, TreeI<Long>> p : hierarchies) {
+                    if (!lineages.containsKey(attr)) {
+                        TreeI<Long> tree = p.getSecond();
+                        for (NodeI<Long> node : tree.getNodes()) {
+                            if (node.getAttribute().equals(attr) && !lineages.containsKey(attr)) {
+                                int depth = node.getDepth();
+                                NodeI[] lin = new NodeI[depth + 1];
+                                lin[depth] = node;
+                                while (!node.isRoot()) {
+                                    node = node.getParent();
+                                    lin[--depth] = node;
+                                }
+                                List<String> lineageString = new ArrayList<>(depth + 1);
+                                for (NodeI<Long> n : lin) {
+                                    lineageString.add(n.getAttribute().getValue());
+                                }
+                                String l = String.join("; ", lineageString.toArray(new String[]{}));
+                                lineages.put(attr, l);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         SortOrder<Double> order = new SortOrder<>(SortOrder.DESCENDING);
         dists = order.filter(dists);
 
@@ -127,7 +176,11 @@ public class TableViewer extends AbstractViewer<DistributionI<Long>> implements 
 
         for (AttributeI a : allAttrs) {
             Object[] rowData = new Object[numColumns];
-            rowData[0] = a.getValue();
+            if (getCust().showLineage()) {
+                rowData[0] = lineages.get(a);
+            } else {
+                rowData[0] = a.getValue();
+            }
             int col = 1;
             for (Pair<GroupI, DistributionI<Double>> p : dists) {
                 DistributionI<Double> d = p.getSecond();
@@ -141,14 +194,14 @@ public class TableViewer extends AbstractViewer<DistributionI<Long>> implements 
         cust.setModel(model); // for tsv export
 
         table = new JXTable(model) {
-            
+
             //
             // # 162 -ignore setPreferredSize() so scrollbars work
             //
             @Override
             public void setPreferredSize(Dimension preferredSize) {
             }
-        
+
         };
         table.setDefaultRenderer(Double.class, new DecimalFormatRenderer());
         table.setFillsViewportHeight(true);
@@ -221,7 +274,7 @@ public class TableViewer extends AbstractViewer<DistributionI<Long>> implements 
                         svg.translate(0, hdr.getHeight());
                         table.printAll(svg);
                         String svgElement = svg.getSVGElement();
-                        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fName))) {
+                        try ( BufferedWriter bw = new BufferedWriter(new FileWriter(fName))) {
                             bw.write(svgElement);
                         }
                         return Result.SUCCESS;
