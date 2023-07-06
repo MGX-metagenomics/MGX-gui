@@ -67,6 +67,7 @@ class TableViewCustomizer extends javax.swing.JPanel implements VisFilterI<Distr
         fractions.setEnabled(false);
         filterField.setText("");
         filterField.setEnabled(false);
+        showLineage.setEnabled(false);
     }
 
     String getMatchText() {
