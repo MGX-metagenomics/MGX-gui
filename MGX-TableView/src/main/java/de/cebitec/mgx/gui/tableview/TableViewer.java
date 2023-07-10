@@ -138,7 +138,7 @@ public class TableViewer extends AbstractViewer<DistributionI<Long>> implements 
                                     lin[--depth] = node;
                                 }
                                 List<String> lineageString = new ArrayList<>(depth + 1);
-                                for (NodeI<Long> n : lin) {
+                                for (NodeI n : lin) {
                                     lineageString.add(n.getAttribute().getValue());
                                 }
                                 String l = String.join("; ", lineageString.toArray(new String[]{}));
