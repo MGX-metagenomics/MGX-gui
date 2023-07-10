@@ -14,7 +14,6 @@ import java.util.List;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotificationLineSupport;
-import org.openide.NotifyDescriptor;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
@@ -50,7 +49,7 @@ public class LoginHandler implements ActionListener {
         //dialog = new DialogDescriptor(panel, "Login", true, this);
         dialog.setValid(false);
         dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION, DialogDescriptor.OK_OPTION});
-        
+
         PropertyChangeListener pcl = new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
@@ -76,7 +75,7 @@ public class LoginHandler implements ActionListener {
         }
 
         DialogDisplayer.getDefault().notify(dialog);
-        
+
         dialog.removePropertyChangeListener(pcl);
     }
 
@@ -97,7 +96,6 @@ public class LoginHandler implements ActionListener {
 //        }
 //        return true;
 //    }
-
     @Override
     public void actionPerformed(ActionEvent ae) {
         if (ae.getSource() == DialogDescriptor.OK_OPTION) {
@@ -121,6 +119,10 @@ public class LoginHandler implements ActionListener {
                 } catch (GPMSException ex) {
                     loggedIn = false;
                     errorMsg = ex.getMessage();
+                    if (errorMsg.contains("Exception: ")) {
+                        int idx = errorMsg.lastIndexOf("Exception: ");
+                        errorMsg = errorMsg.substring(idx + 11);
+                    }
                 }
                 if (loggedIn) {
                     dialog.setClosingOptions(new Object[]{DialogDescriptor.CANCEL_OPTION, DialogDescriptor.OK_OPTION});
