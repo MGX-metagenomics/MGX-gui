@@ -11,6 +11,8 @@ import de.cebitec.mgx.api.model.assembly.BinI;
 import de.cebitec.mgx.api.model.assembly.ContigI;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -27,6 +29,8 @@ public class ContigFetcher implements Runnable {
     private final XYSeriesCollection dataset;
     private final CountDownLatch done;
     private final ProgressHandle ph;
+    //
+    private static final Logger LOG = Logger.getLogger(ContigFetcher.class.getName());
     //
     private final Cache<BinI, XYSeries> cache;
 
@@ -62,11 +66,22 @@ public class ContigFetcher implements Runnable {
             XYDataItem item = new ContigItem(bin, c);
             series.add(item, false);
             numElements++;
-            
+
             if (numElements % 50 == 0) {
                 ph.progress(numElements);
             }
         }
+
+        // check if data is complete
+        if (numElements != bin.getNumContigs()) {
+            LOG.log(Level.SEVERE, "Expected to receive {0} contigs, only got {1}", new Object[]{bin.getNumContigs(), numElements});
+            series.clear();
+            series.setNotify(true);
+            ph.finish();
+            done.countDown();
+            return;
+        }
+
         series.setNotify(true);
         cache.put(bin, series);
 
