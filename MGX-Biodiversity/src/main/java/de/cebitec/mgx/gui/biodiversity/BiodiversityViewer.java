@@ -23,6 +23,8 @@ import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 import org.openide.util.lookup.ServiceProvider;
 import de.cebitec.mgx.gui.biodiversity.statistic.StatisticI;
+import de.cebitec.mgx.gui.biodiversity.statistic.impl.Margalef;
+import de.cebitec.mgx.gui.biodiversity.statistic.impl.Menhinick;
 
 /**
  *
@@ -37,7 +39,9 @@ public class BiodiversityViewer extends CategoricalViewerI<Long> implements Cust
     private BiodiversityCustomizer cust = null;
 
     public BiodiversityViewer() {
-        this.stats = new StatisticI[]{new ACE(), new Chao1(), new Shannon(), new ShannonEvenness(), new Simpson()};
+        this.stats = new StatisticI[]{new ACE(), new Chao1(),
+            new Margalef(), new Menhinick(),
+            new Shannon(), new ShannonEvenness(), new Simpson()};
     }
 
     @Override

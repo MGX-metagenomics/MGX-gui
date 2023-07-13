@@ -29,6 +29,8 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.Utilities;
 import org.openide.windows.TopComponent;
 import de.cebitec.mgx.gui.biodiversity.statistic.StatisticI;
+import de.cebitec.mgx.gui.biodiversity.statistic.impl.Margalef;
+import de.cebitec.mgx.gui.biodiversity.statistic.impl.Menhinick;
 import java.awt.Image;
 import java.io.Serial;
 
@@ -70,7 +72,9 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
 
     @SuppressWarnings("unchecked")
     private BiodiversityTopComponent() {
-        this.stats = new StatisticI[]{new ACE(), new Chao1(), new Shannon(), new ShannonEvenness(), new Simpson()};
+        this.stats = new StatisticI[]{new ACE(), new Chao1(), 
+            new Margalef(), new Menhinick(),
+            new Shannon(), new ShannonEvenness(), new Simpson()};
 
         model = new DefaultTableModel(new String[]{"Index", "Value"}, stats.length) {
 
