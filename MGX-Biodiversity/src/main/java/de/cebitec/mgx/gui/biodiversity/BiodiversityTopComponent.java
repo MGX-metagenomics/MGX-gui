@@ -1,6 +1,6 @@
 package de.cebitec.mgx.gui.biodiversity;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import de.cebitec.mgx.api.misc.DistributionI;
 import de.cebitec.mgx.api.model.ModelBaseI;
 import de.cebitec.mgx.gui.biodiversity.statistic.impl.ACE;
@@ -61,8 +61,8 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private final Lookup.Result<VisualizationGroupI> result;
-    private VisualizationGroupI curGroup = null;
+    private final Lookup.Result<GroupI> result;
+    private GroupI<?> curGroup = null;
     private final TableModel model;
     private final StatisticI[] stats;
     //
@@ -106,7 +106,7 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
         setName(Bundle.CTL_BiodiversityTopComponent());
         setToolTipText(Bundle.HINT_BiodiversityTopComponent());
         putClientProperty(TopComponent.PROP_MAXIMIZATION_DISABLED, Boolean.TRUE);
-        result = Utilities.actionsGlobalContext().lookupResult(VisualizationGroupI.class);
+        result = Utilities.actionsGlobalContext().lookupResult(GroupI.class);
     }
 
     private static BiodiversityTopComponent instance = null;
@@ -305,13 +305,13 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
 
     @Override
     public void resultChanged(LookupEvent le) {
-        Collection<? extends VisualizationGroupI> groups = result.allInstances();
+        Collection<? extends GroupI> groups = result.allInstances();
         if (groups.isEmpty()) {
             return;
         }
 
-        VisualizationGroupI newGroup = null;
-        for (VisualizationGroupI vg : groups) {
+        GroupI newGroup = null;
+        for (GroupI vg : groups) {
             newGroup = vg;
         }
 
@@ -330,20 +330,20 @@ public final class BiodiversityTopComponent extends TopComponent implements Look
     @Override
     public void propertyChange(final PropertyChangeEvent evt) {
         switch (evt.getPropertyName()) {
-            case VisualizationGroupI.VISGROUP_RENAMED:
+            case GroupI.VISGROUP_RENAMED:
                 groupName.setText(curGroup.getDisplayName());
                 break;
-            case VisualizationGroupI.VISGROUP_DEACTIVATED:
+            case GroupI.VISGROUP_DEACTIVATED:
                 // ignore
                 break;
-            case VisualizationGroupI.VISGROUP_HAS_DIST:
-            case VisualizationGroupI.VISGROUP_ATTRTYPE_CHANGED:
-            case VisualizationGroupI.VISGROUP_CHANGED:
+            case GroupI.VISGROUP_HAS_DIST:
+            case GroupI.VISGROUP_ATTRTYPE_CHANGED:
+            case GroupI.VISGROUP_CHANGED:
                 update();
                 break;
             case ModelBaseI.OBJECT_DELETED:
-                if (evt.getSource() instanceof VisualizationGroupI) {
-                    VisualizationGroupI vGrp = (VisualizationGroupI) evt.getSource();
+                if (evt.getSource() instanceof GroupI) {
+                    GroupI vGrp = (GroupI) evt.getSource();
                     if (vGrp != null && vGrp.equals(curGroup)) {
                         synchronized (this) {
                             curGroup.removePropertyChangeListener(this);

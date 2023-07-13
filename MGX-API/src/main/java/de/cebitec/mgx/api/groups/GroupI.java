@@ -11,7 +11,6 @@ import de.cebitec.mgx.api.misc.Triple;
 import de.cebitec.mgx.api.model.AttributeI;
 import de.cebitec.mgx.api.model.AttributeTypeI;
 import de.cebitec.mgx.api.model.JobI;
-import de.cebitec.mgx.api.model.SeqRunI;
 import de.cebitec.mgx.api.model.tree.TreeI;
 import java.awt.Color;
 import java.awt.datatransfer.DataFlavor;
@@ -34,6 +33,14 @@ public interface GroupI<T> extends Comparable<GroupI<T>>, PropertyChangeListener
     public final static String OBJECT_DELETED = "objectDeleted";
     public final static String OBJECT_MODIFIED = "objectModified";
     public final static String CHILD_CHANGE = "childAddedOrRemoved";
+
+    // possible property change names
+    public static final String VISGROUP_ACTIVATED = "visgroup_activated";
+    public static final String VISGROUP_ATTRTYPE_CHANGED = "vgAttrTypeChange";
+    public static final String VISGROUP_CHANGED = "visgroup_changed";
+    public static final String VISGROUP_DEACTIVATED = "visgroup_deactivated";
+    public static final String VISGROUP_HAS_DIST = "vgroup_HasDist";
+    public static final String VISGROUP_RENAMED = "vgroup_renamed";
 
     public Class<T> getContentClass();
 
