@@ -5,7 +5,7 @@
  */
 package de.cebitec.mgx.gui.biodiversity;
 
-import de.cebitec.mgx.api.groups.VisualizationGroupI;
+import de.cebitec.mgx.api.groups.GroupI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import org.openide.awt.ActionID;
@@ -32,9 +32,9 @@ import org.openide.windows.WindowManager;
 @Messages("CTL_AlphadiversityAction=Alpha diversity")
 public final class AlphadiversityAction implements ActionListener {
 
-    private final VisualizationGroupI context;
+    private final GroupI<?> context;
 
-    public AlphadiversityAction(VisualizationGroupI context) {
+    public AlphadiversityAction(GroupI context) {
         this.context = context;
     }
 
