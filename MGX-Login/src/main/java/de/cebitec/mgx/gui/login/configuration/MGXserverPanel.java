@@ -166,8 +166,11 @@ public class MGXserverPanel extends javax.swing.JPanel implements DocumentListen
     }// </editor-fold>//GEN-END:initComponents
 
     void load() {
-        site.setText(NbPreferences.forModule(MGXserverPanel.class).get("servername", "CeBiTec"));
-        server.setText(NbPreferences.forModule(MGXserverPanel.class).get("serveruri", "https://mgx.cebitec.uni-bielefeld.de/MGX-maven-web/webresources/"));
+        GPMSClientI cur = serverList.getSelectedValue();
+        if (cur != null) {
+            site.setText(cur.getServerName());
+            server.setText(cur.getBaseURI());
+        }
     }
 
     void store() {
