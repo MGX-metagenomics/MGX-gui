@@ -43,7 +43,7 @@ import org.openide.util.actions.NodeAction;
  * @author sjaenick
  */
 @ActionID(category = "Edit", id = "de.cebitec.mgx.gui.actions.ExportBinFAA")
-@ActionRegistration(displayName = "Export genes to amino-acid FASTA", lazy = true)
+@ActionRegistration(displayName = "Export CDS to amino-acid FASTA", lazy = true)
 public class ExportBinFAA extends NodeAction implements LookupListener {
 
     @Serial
@@ -57,7 +57,7 @@ public class ExportBinFAA extends NodeAction implements LookupListener {
     }
 
     private ExportBinFAA(Lookup context) {
-        putValue(NAME, "Export genes to amino-acid FASTA");
+        putValue(NAME, "Export CDS to amino-acid FASTA");
         this.context = context;
         init();
     }
@@ -88,7 +88,7 @@ public class ExportBinFAA extends NodeAction implements LookupListener {
 
     @Override
     public String getName() {
-        return "Export genes to amino-acid FASTA";
+        return "Export CDS to amino-acid FASTA";
     }
 
     @Override
