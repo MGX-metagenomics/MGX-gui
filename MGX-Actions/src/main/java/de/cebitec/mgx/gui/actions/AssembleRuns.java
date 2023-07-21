@@ -127,6 +127,20 @@ public class AssembleRuns extends NodeAction implements LookupListener {
             DialogDisplayer.getDefault().notify(d);
             return;
         }
+        
+        
+        // check for at least one paired-end run
+        int numPairedRuns = 0;
+        for (SeqRunI run : runs) {
+            if (run.isPaired()) {
+                numPairedRuns++;
+            }
+        }
+        if (numPairedRuns == 0) {
+            NotifyDescriptor d = new NotifyDescriptor("At least one paired-end dataset is required for assembly.", "Error", NotifyDescriptor.OK_CANCEL_OPTION, NotifyDescriptor.ERROR_MESSAGE, null, null);
+            DialogDisplayer.getDefault().notify(d);
+            return;
+        }
 
         final List<ToolI> projectTools = new ArrayList<>();
         final List<ToolI> repositoryTools = new ArrayList<>();
