@@ -43,7 +43,6 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import org.apache.pdfbox.contentstream.operator.text.NextLine;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
