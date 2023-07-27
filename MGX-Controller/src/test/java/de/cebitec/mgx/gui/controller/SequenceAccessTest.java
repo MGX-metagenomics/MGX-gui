@@ -26,21 +26,6 @@ public class SequenceAccessTest {
     }
 
     @Test
-    public void testFetch_SeqRunI_String() throws Exception {
-        System.out.println("testFetch_SeqRunI_String");
-        MGXMasterI master = TestMaster.getRO();
-        SeqRunI seqrun = master.SeqRun().fetch(49);
-        assertNotNull(seqrun);
-        long start = System.currentTimeMillis();
-        for (int i = 0; i < 100; i++) {
-            SequenceI seq = master.Sequence().fetch(seqrun, "FI5LW4G01AM15A");
-            assertNotNull(seq);
-        }
-        start = System.currentTimeMillis() - start;
-        System.err.println("duration in ms: " + start);
-    }
-
-    @Test
     public void fetchValidID() {
         System.out.println("fetchValidID");
         MGXMasterI master = TestMaster.getRO();

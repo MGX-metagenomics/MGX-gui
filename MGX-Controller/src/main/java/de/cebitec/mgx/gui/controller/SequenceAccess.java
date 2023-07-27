@@ -161,19 +161,6 @@ public class SequenceAccess extends MasterHolder implements SequenceAccessI {
     }
 
     @Override
-    public SequenceI fetch(SeqRunI seqrun, String seqName) throws MGXException {
-        SequenceDTO dto = null;
-        try {
-            dto = getDTOmaster().Sequence().byName(seqrun.getId(), seqName);      
-        } catch (MGXClientLoggedOutException mcle) {
-            throw new MGXLoggedoutException(mcle);
-        } catch (MGXDTOException ex) {
-            throw new MGXException(ex);
-        }
-        return SequenceDTOFactory.getInstance().toModel(getMaster(), dto);
-    }
-
-    @Override
     public void fetchSeqData(Iterable<SequenceI> seqs) throws MGXException {
         TLongObjectMap<SequenceI> idx = new TLongObjectHashMap<>();
         try {
