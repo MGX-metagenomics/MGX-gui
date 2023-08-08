@@ -15,7 +15,7 @@ import de.cebitec.mgx.gui.rbac.RBAC;
 import de.cebitec.mgx.gui.taskview.MGXTask;
 import de.cebitec.mgx.gui.taskview.TaskManager;
 import de.cebitec.mgx.gui.wizard.seqrun.SeqRunWizardDescriptor;
-import de.cebitec.mgx.sequence.AlternatingQReader;
+import de.cebitec.mgx.seqstorage.AlternatingQReader;
 import de.cebitec.mgx.sequence.DNAQualitySequenceI;
 import de.cebitec.mgx.sequence.DNASequenceI;
 import de.cebitec.mgx.sequence.SeqReaderFactory;
