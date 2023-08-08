@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="60mm"
+   height="60mm"
+   viewBox="0 0 226.77165 226.77164"
+   version="1.1"
+   id="svg19"
+   sodipodi:docname="mgx_.svg"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+  <metadata
+     id="metadata25">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs23" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1498"
+     inkscape:window-height="957"
+     id="namedview21"
+     showgrid="false"
+     units="mm"
+     inkscape:zoom="1.8200922"
+     inkscape:cx="65.300608"
+     inkscape:cy="104.59474"
+     inkscape:window-x="382"
+     inkscape:window-y="87"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg19" />
+  <g
+     id="Gruppe_3"
+     data-name="Gruppe 3"
+     transform="matrix(0.14988956,0,0,0.19650342,-30.147709,7.75379)">
+    <path
+       id="Pfad_1"
+       data-name="Pfad 1"
+       d="M 23.3,80.753 983.7,-69.6 840.523,676.876 -13.454,732.706 Z"
+       transform="translate(731.498,90.946)"
+       inkscape:connector-curvature="0"
+       style="fill:#86a6e1" />
+    <path
+       id="Pfad_2"
+       data-name="Pfad 2"
+       d="m -6.291,-11.627 770.158,54.636 3.6,690.579 L -5.864,602.024 Z"
+       transform="translate(606.761,325.067)"
+       inkscape:connector-curvature="0"
+       style="opacity:0.9;fill:#566f9f" />
+    <path
+       id="Pfad_3"
+       data-name="Pfad 3"
+       d="M -11.83,-4.12 901.3,99.077 933.605,742.713 62.925,698.093 Z"
+       transform="translate(216.635,163.634)"
+       inkscape:connector-curvature="0"
+       style="opacity:0.95;fill:#2c3b56" />
+  </g>
+</svg>

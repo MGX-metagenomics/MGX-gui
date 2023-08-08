@@ -3,6 +3,7 @@ package de.cebitec.mgx.gui.nodes;
 import de.cebitec.mgx.api.MGXMasterI;
 import de.cebitec.mgx.gui.actions.DownloadPluginDump;
 import de.cebitec.mgx.gui.nodefactory.ProjectStructureNodeFactory;
+import java.awt.Image;
 import javax.swing.Action;
 import org.openide.nodes.Children;
 import org.openide.util.lookup.Lookups;
@@ -21,7 +22,14 @@ public class ProjectNode extends MGXNodeBase<MGXMasterI> {
 
     private ProjectNode(MGXMasterI m, ProjectStructureNodeFactory nf) {
         super(Children.create(nf, false), Lookups.fixed(m), m);
-        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/mgx.png");
+        setIconBaseWithExtension("de/cebitec/mgx/gui/nodes/MGX.png");
+    }
+
+    @Override
+    public Image getIcon(int type) {
+        Image image = super.getIcon(type);
+        Image scaledInstance = image.getScaledInstance(16, 16, Image.SCALE_SMOOTH);
+        return scaledInstance;
     }
 
     @Override
