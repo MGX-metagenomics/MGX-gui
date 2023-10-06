@@ -95,8 +95,11 @@ public class SeqPropertyPanel extends PanelBase<ContigViewController> {
             return;
         }
         String dnaSequence = vc.getSequence();
-
-        assert contig.getLength() == dnaSequence.length();
+        
+        if (dnaSequence == null) {
+            // e.g. because the assembly is currently being deleted
+            return;
+        }
 
         int seqLen = dnaSequence.length();
         for (int i = bounds[0]; i < bounds[1]; i += winShift) {
