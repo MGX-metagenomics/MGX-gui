@@ -40,7 +40,7 @@ import org.openide.util.Utilities;
 import org.openide.util.actions.NodeAction;
 
 @ActionID(category = "Edit", id = "de.cebitec.mgx.gui.goldstandard.actions.AddGoldstandard")
-@ActionRegistration(displayName = "Add reference annotation", lazy = true)
+@ActionRegistration(displayName = "Add reference annotation", lazy = false)
 public final class AddGoldstandard extends NodeAction implements LookupListener {
 
     @Serial
@@ -63,7 +63,7 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
     }
 
     private AddGoldstandard(Lookup context) {
-        putValue(NAME, "AddGoldstandard");
+        putValue(NAME, "Add reference annotation");
         this.context = context;
         init();
     }
@@ -79,7 +79,7 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
 
     @Override
     public void resultChanged(LookupEvent ev) {
-        setEnabled(!lkpInfo.allInstances().isEmpty());
+        setEnabled(RBAC.isUser() && !lkpInfo.allInstances().isEmpty());
     }
 
     @Override
@@ -89,17 +89,17 @@ public final class AddGoldstandard extends NodeAction implements LookupListener 
 
     @Override
     protected boolean enable(Node[] activatedNodes) {
-        return true;
+        return RBAC.isUser();
     }
 
     @Override
     public String getName() {
-        return "AddGoldstandard";
+        return "Add reference annotation";
     }
 
     @Override
     public HelpCtx getHelpCtx() {
-        return null;
+        return HelpCtx.DEFAULT_HELP;
     }
 
     @Override
