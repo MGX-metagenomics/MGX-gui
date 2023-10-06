@@ -84,7 +84,7 @@ public class AssembleRuns extends NodeAction implements LookupListener {
 
     @Override
     public void resultChanged(LookupEvent ev) {
-        setEnabled(!lkpInfo.allInstances().isEmpty());
+        setEnabled(RBAC.isUser() && !lkpInfo.allInstances().isEmpty());
     }
 
     @Override
