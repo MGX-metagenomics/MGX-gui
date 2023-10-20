@@ -55,6 +55,7 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
     private KeggCustomizer customizer;
     private List<Pair<GroupI, DistributionI<Long>>> data;
     private VGroupManagerI vmgr = null;
+    private boolean initOk = true;
     //
     private static boolean messageShown = false;
 
@@ -67,6 +68,7 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
             customizer = new KeggCustomizer();
         } catch (KEGGException ex) {
             Exceptions.printStackTrace(ex);
+            initOk = false;
         }
     }
 
@@ -242,7 +244,7 @@ public class KeggViewer extends CategoricalViewerI<Long> implements Customizable
 
     @Override
     public boolean canHandle(AttributeTypeI valueType) {
-        return Installer.keggLoaded && super.canHandle(valueType) && valueType.getName().equals("EC_number");
+        return initOk && super.canHandle(valueType) && valueType.getName().equals("EC_number");
     }
 
     @Override

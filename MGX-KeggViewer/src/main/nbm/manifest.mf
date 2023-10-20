@@ -1,3 +1,2 @@
 Manifest-Version: 1.0
-OpenIDE-Module-Install: de/cebitec/mgx/gui/keggviewer/Installer.class
 OpenIDE-Module-Localizing-Bundle: de/cebitec/mgx/gui/keggviewer/Bundle.properties
