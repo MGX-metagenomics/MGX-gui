@@ -195,11 +195,12 @@ public class SeqRunAccessTest {
         boolean success = false;
         try {
             UploadBaseI uploader = m.Sequence().createUploader(newRun, reader);
+            assertNotNull(uploader);
             success = uploader.upload();
         } catch (MGXException ex) {
             fail(ex.getMessage());
         }
-        assertTrue(success);
+        assertTrue(success, "Upload did not succeed as expected");
 
         // check number of sequences uploaded for local SeqRunI instance
         long numSeqs = newRun.getNumSequences();
