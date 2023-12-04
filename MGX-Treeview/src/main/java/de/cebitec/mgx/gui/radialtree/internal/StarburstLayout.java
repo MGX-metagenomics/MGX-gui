@@ -248,13 +248,13 @@ public class StarburstLayout extends TreeLayout {
             m_maxDepth = d;
         }
 
-        if ((double) n.getDouble("size") > 0) {
+        if (n.getDouble("size") > 0) {
             Iterator childIter = n.children();
             double startAngle = angle;
             while (childIter.hasNext()) {
                 NodeItem c = (NodeItem) childIter.next();
                 // assign a fraction of the available span based on relative sizes
-                double childAW = width * n.getDouble("angleFactor") * ((double) c.getDouble("size") / (double) n.getDouble("size"));
+                double childAW = width * n.getDouble("angleFactor") * (c.getDouble("size") / n.getDouble("size"));
                 calcAngularWidth(c, d + 1, childAW, startAngle);
                 startAngle += childAW;
             }
