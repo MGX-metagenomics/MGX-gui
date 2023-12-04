@@ -8,6 +8,7 @@ package de.cebitec.mgx.gui.charts.basic.util;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -138,7 +139,7 @@ public class FastCategoryDataset<T extends Comparable<T>> extends AbstractDatase
      * @see #getColumnIndex(Comparable)
      */
     @Override
-    public Comparable getColumnKey(int column) {
+    public T getColumnKey(int column) {
         return this.data.getColumnKey(column);
     }
 
@@ -165,7 +166,7 @@ public class FastCategoryDataset<T extends Comparable<T>> extends AbstractDatase
      * @see #getColumnKey(int)
      */
     @Override
-    public List getColumnKeys() {
+    public List<T> getColumnKeys() {
         return this.data.getColumnKeys();
     }
 
@@ -468,9 +469,9 @@ public class FastCategoryDataset<T extends Comparable<T>> extends AbstractDatase
          * @param sortRowKeys if the row keys should be sorted.
          */
         public FastKeyedValues2D(boolean sortRowKeys) {
-            this.rowKeys = new java.util.ArrayList<>();
-            this.columnKeys = new java.util.ArrayList<>();
-            this.rows = new java.util.ArrayList<>();
+            this.rowKeys = new ArrayList<>();
+            this.columnKeys = new ArrayList<>();
+            this.rows = new ArrayList<>();
             this.rowKeyIndexMap = new TObjectIntHashMap<>();
             this.columnKeyIndexMap = new TObjectIntHashMap<>();
             this.sortRowKeys = sortRowKeys;
