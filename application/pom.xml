@@ -40,6 +40,12 @@
                     <groupId>org.netbeans.external</groupId>
                     <artifactId>org-apache-commons-logging</artifactId>
                 </exclusion>
+                
+                <!-- exclude commons-io, a newer versions gets pulled in via mgx-statistics -->
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-apache-commons-commons_io</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
