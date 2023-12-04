@@ -10,12 +10,19 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Formatter;
+import java.util.List;
 import java.util.Locale;
 import org.biojava.nbio.core.sequence.DNASequence;
+import org.biojava.nbio.core.sequence.Strand;
 import org.biojava.nbio.core.sequence.compound.DNACompoundSet;
 import org.biojava.nbio.core.sequence.compound.NucleotideCompound;
+import org.biojava.nbio.core.sequence.features.DBReferenceInfo;
 import org.biojava.nbio.core.sequence.features.FeatureInterface;
+import org.biojava.nbio.core.sequence.features.Qualifier;
 import org.biojava.nbio.core.sequence.io.GenericGenbankHeaderFormat;
+import org.biojava.nbio.core.sequence.location.template.AbstractLocation;
+import org.biojava.nbio.core.sequence.location.template.Location;
+import org.biojava.nbio.core.sequence.location.template.Point;
 import org.biojava.nbio.core.sequence.template.AbstractSequence;
 import org.biojava.nbio.core.util.StringManipulationHelper;
 
@@ -25,7 +32,7 @@ import org.biojava.nbio.core.util.StringManipulationHelper;
  */
 public class GBKHeaderFormatter extends GenericGenbankHeaderFormat<DNASequence, NucleotideCompound> {
 
-    private static final String lineSep = "%n";
+    private static final String lineSep = "\n";
     private static final int HEADER_WIDTH = 12;
 
     private String _write_the_first_line(DNASequence sequence) {
@@ -220,7 +227,7 @@ public class GBKHeaderFormatter extends GenericGenbankHeaderFormat<DNASequence, 
         int rec_length = sequence.getLength();
         for (FeatureInterface<AbstractSequence<NucleotideCompound>, NucleotideCompound> feature : sequence
                 .getFeatures()) {
-            header += _write_feature(feature, rec_length);
+            header += _write_single_feature(feature, rec_length);
         }
 
         return header;
@@ -274,5 +281,287 @@ public class GBKHeaderFormatter extends GenericGenbankHeaderFormat<DNASequence, 
         assert tag.length() < HEADER_WIDTH;
         return StringManipulationHelper.padRight(tag, HEADER_WIDTH)
                 + text.replace('\n', ' ') + lineSep;
+    }
+
+    private String _write_single_feature(FeatureInterface<AbstractSequence<NucleotideCompound>, NucleotideCompound> feature, int record_length) {
+        String location = _insdc_feature_location_string(feature, record_length);
+        String f_type = feature.getType().replace(" ", "_");
+        StringBuilder sb = new StringBuilder();
+        Formatter formatter = new Formatter(sb, Locale.US);
+        formatter.format(QUALIFIER_INDENT_TMP, f_type);
+        String line = formatter.toString().substring(0, QUALIFIER_INDENT) + _wrap_location(location) + lineSep;
+        formatter.close();
+
+        //Now the qualifiers...
+        for (List<Qualifier> qualifiers : feature.getQualifiers().values()) {
+            for (Qualifier q : qualifiers) {
+                if (q instanceof DBReferenceInfo) {
+                    DBReferenceInfo db = (DBReferenceInfo) q;
+                    line += _write_feature_qualifier(q.getName().replaceAll("%", "%%"), db.getDatabase().replaceAll("%", "%%") + ":" + db.getId().replaceAll("%", "%%"), db.needsQuotes());
+                } else {
+                    line += _write_feature_qualifier(q.getName().replaceAll("%", "%%"), q.getValue().replaceAll("%", "%%"), q.needsQuotes());
+                }
+            }
+        }
+        return line;
+        /*
+		self.handle.write(line)
+		#Now the qualifiers...
+		for key, values in feature.qualifiers.items():
+			if isinstance(values, list) or isinstance(values, tuple):
+				for value in values:
+					self._write_feature_qualifier(key, value)
+			elif values:
+				#String, int, etc
+				self._write_feature_qualifier(key, values)
+			else:
+				#e.g. a /psuedo entry
+				self._write_feature_qualifier(key)
+         */
+    }
+
+    private String _insdc_feature_location_string(FeatureInterface<AbstractSequence<NucleotideCompound>, NucleotideCompound> feature, int record_length) {
+        if (feature.getChildrenFeatures().isEmpty()) {
+            if (feature.getLocations().getSubLocations().isEmpty()) {
+                //Non-recursive.
+                String location = _insdc_location_string_ignoring_strand_and_subfeatures(feature.getLocations(), record_length);
+                if (feature.getLocations().getStrand() == Strand.NEGATIVE) {
+                    StringBuilder sb = new StringBuilder();
+                    Formatter formatter = new Formatter(sb, Locale.US);
+                    formatter.format("complement(%s)", location);
+                    String output = formatter.toString();
+                    formatter.close();
+                    location = output;
+                }
+                return location;
+
+            } else if (feature.getLocations().getStrand() == Strand.NEGATIVE) {
+
+                // As noted above, treat reverse complement strand features carefully:
+                // check if any of the sublocations strand differs from the parent features strand
+                for (Location l : feature.getLocations().getSubLocations()) {
+                    if (l.getStrand() != Strand.NEGATIVE) {
+                        StringBuilder sb = new StringBuilder();
+                        Formatter formatter = new Formatter(sb, Locale.US);
+                        formatter.format("Inconsistent strands: %s for parent, %s for child",
+                                feature.getLocations().getStrand(), l.getStrand());
+                        String output = formatter.toString();
+                        formatter.close();
+                        throw new RuntimeException(output);
+                    }
+                }
+
+                StringBuilder sb = new StringBuilder();
+                Formatter formatter = new Formatter(sb, Locale.US);
+                ArrayList<String> locations = new ArrayList<>();
+                for (Location l : feature.getLocations().getSubLocations()) {
+                    locations.add(_insdc_location_string_ignoring_strand_and_subfeatures((AbstractLocation) l, record_length));
+                }
+                String location = StringManipulationHelper.join(locations, ",");
+                formatter.format("complement(%s(%s))", /* feature.location_operator */ "join", location);
+                String output = formatter.toString();
+                formatter.close();
+                return output;
+
+            } else {
+                //Convert feature sub-locations into joins
+                //This covers typical forward strand features, and also an evil mixed strand:
+                StringBuilder sb = new StringBuilder();
+                Formatter formatter = new Formatter(sb, Locale.US);
+                ArrayList<String> locations = new ArrayList<>();
+                for (Location l : feature.getLocations().getSubLocations()) {
+                    locations.add(_insdc_location_string_ignoring_strand_and_subfeatures((AbstractLocation) l, record_length));
+                }
+                String location = StringManipulationHelper.join(locations, ",");
+                formatter.format("%s(%s)", /*feature.location_operator*/ "join", location);
+                String output = formatter.toString();
+                formatter.close();
+                return output;
+            }
+        }
+        // As noted above, treat reverse complement strand features carefully:
+        if (feature.getLocations().getStrand() == Strand.NEGATIVE) {
+            for (FeatureInterface<?, ?> f : feature.getChildrenFeatures()) {
+                if (f.getLocations().getStrand() != Strand.NEGATIVE) {
+                    StringBuilder sb = new StringBuilder();
+                    Formatter formatter = new Formatter(sb, Locale.US);
+                    formatter.format("Inconsistent strands: %s for parent, %s for child", feature.getLocations().getStrand(), f.getLocations().getStrand());
+                    String output = formatter.toString();
+                    formatter.close();
+                    throw new RuntimeException(output);
+                }
+            }
+            StringBuilder sb = new StringBuilder();
+            Formatter formatter = new Formatter(sb, Locale.US);
+            ArrayList<String> locations = new ArrayList<>();
+            for (FeatureInterface<AbstractSequence<NucleotideCompound>, NucleotideCompound> f : feature.getChildrenFeatures()) {
+                locations.add(_insdc_location_string_ignoring_strand_and_subfeatures(f.getLocations(), record_length));
+            }
+            String location = StringManipulationHelper.join(locations, ",");
+            formatter.format("complement(%s(%s))", /*feature.location_operator*/ "join", location);
+            String output = formatter.toString();
+            formatter.close();
+            return output;
+        }
+        //This covers typical forward strand features, and also an evil mixed strand:
+        StringBuilder sb = new StringBuilder();
+        Formatter formatter = new Formatter(sb, Locale.US);
+        ArrayList<String> locations = new ArrayList<>();
+        for (FeatureInterface<AbstractSequence<NucleotideCompound>, NucleotideCompound> f : feature.getChildrenFeatures()) {
+            locations.add(_insdc_location_string_ignoring_strand_and_subfeatures(f.getLocations(), record_length));
+        }
+        String location = StringManipulationHelper.join(locations, ",");
+        formatter.format("%s(%s)", /*feature.location_operator*/ "join", location);
+        String output = formatter.toString();
+        formatter.close();
+        return output;
+    }
+
+    private String _insdc_location_string_ignoring_strand_and_subfeatures(
+            //SequenceLocation<AbstractSequence<C>, C> sequenceLocation,
+            AbstractLocation sequenceLocation,
+            int record_length) {
+        /*
+	if location.ref:
+		ref = "%s:" % location.ref
+	else:
+		ref = ""
+	assert not location.ref_db
+         */
+        String ref = "";
+        if (!sequenceLocation.getStart().isUncertain() && !sequenceLocation.getEnd().isUncertain() && sequenceLocation.getStart() == sequenceLocation.getEnd()) {
+            //Special case, for 12:12 return 12^13
+            //(a zero length slice, meaning the point between two letters)
+            if (sequenceLocation.getEnd().getPosition() == record_length) {
+                //Very special case, for a between position at the end of a
+                //sequence (used on some circular genomes, Bug 3098) we have
+                //N:N so return N^1
+                StringBuilder sb = new StringBuilder();
+                Formatter formatter = new Formatter(sb, Locale.US);
+                formatter.format("%s%d^1", ref, record_length);
+                String output = formatter.toString();
+                formatter.close();
+                return output;
+            } else {
+                StringBuilder sb = new StringBuilder();
+                Formatter formatter = new Formatter(sb, Locale.US);
+                formatter.format("%s%d^%d", ref, sequenceLocation.getStart().getPosition(), sequenceLocation.getEnd().getPosition());
+                String output = formatter.toString();
+                formatter.close();
+                return output;
+            }
+        }
+        if (!sequenceLocation.getStart().isUncertain() && !sequenceLocation.getEnd().isUncertain() && sequenceLocation.getStart().getPosition() + 1 == sequenceLocation.getEnd().getPosition()) {
+            //Special case, for 11:12 return 12 rather than 12..12
+            //(a length one slice, meaning a single letter)
+            StringBuilder sb = new StringBuilder();
+            Formatter formatter = new Formatter(sb, Locale.US);
+            formatter.format("%s%d", ref, sequenceLocation.getEnd().getPosition());
+            String output = formatter.toString();
+            formatter.close();
+            return output;
+        } else if (sequenceLocation.getStart().isUnknown() || sequenceLocation.getEnd().isUnknown()) {
+            //Special case for features from SwissProt/UniProt files
+            if (sequenceLocation.getStart().isUnknown() && sequenceLocation.getEnd().isUnknown()) {
+                throw new RuntimeException("Feature with unknown location");
+            } else if (sequenceLocation.getStart().isUnknown()) {
+                //Treat the unknown start position as a BeforePosition
+                StringBuilder sb = new StringBuilder();
+                Formatter formatter = new Formatter(sb, Locale.US);
+                formatter.format("%s<%d..%s", ref, sequenceLocation.getEnd().getPosition(), _insdc_feature_position_string(sequenceLocation.getEnd()));
+                String output = formatter.toString();
+                formatter.close();
+                return output;
+            } else {
+                //Treat the unknown start position as an AfterPosition
+                StringBuilder sb = new StringBuilder();
+                Formatter formatter = new Formatter(sb, Locale.US);
+                formatter.format("%s%s..>%d", ref, _insdc_feature_position_string(sequenceLocation.getStart()), sequenceLocation.getStart().getPosition());
+                String output = formatter.toString();
+                formatter.close();
+                return output;
+            }
+        } else {
+            //Typical case, e.g. 12..15 gets mapped to 11:15
+            String start = _insdc_feature_position_string(sequenceLocation.getStart());
+            String end = _insdc_feature_position_string(sequenceLocation.getEnd());
+
+            if (sequenceLocation.isPartial()) {
+                if (sequenceLocation.isPartialOn5prime()) {
+                    start = "<" + start;
+                }
+
+                if (sequenceLocation.isPartialOn3prime()) {
+                    end = ">" + end;
+                }
+            }
+
+            return ref + start + ".." + end;
+        }
+    }
+
+    private String _insdc_feature_position_string(Point location) {
+        // TODO Auto-generated method stub
+        return _insdc_feature_position_string(location, 0);
+    }
+
+    private String _insdc_feature_position_string(Point location, int increment) {
+        StringBuilder sb = new StringBuilder();
+        Formatter formatter = new Formatter(sb, Locale.US);
+        formatter.format("%s", location.getPosition() + increment);
+        String output = formatter.toString();
+        formatter.close();
+        return output;
+    }
+
+    private String _wrap_location(String location) {
+        int length = MAX_WIDTH - QUALIFIER_INDENT;
+        if (location.length() <= length) {
+            return location;
+        }
+        int index = location.substring(0, length).lastIndexOf(",");
+        if (-1 == index) {
+            //No good place to split (!)
+            return location;
+        }
+        return location.substring(0, index + 1) + lineSep + QUALIFIER_INDENT_STR + _wrap_location(location.substring(index + 1));
+    }
+
+    private String _write_feature_qualifier(String key, String value, boolean quote) {
+        String line = "";
+        if (null == value) {
+            line = QUALIFIER_INDENT_STR + "/" + key + lineSep;
+            return line;
+        }
+        if (quote) {  // quote should be true for numerics
+            line = QUALIFIER_INDENT_STR + "/" + key + "=\"" + value + "\"";
+        } else {
+            line = QUALIFIER_INDENT_STR + "/" + key + "=" + value;
+        }
+        if (line.length() <= MAX_WIDTH) {
+            return line + lineSep;
+        }
+        String goodlines = "";
+        while (!"".equals(line.replaceAll("^\\s+", ""))) {
+            if (line.length() <= MAX_WIDTH) {
+                goodlines += line + lineSep;
+                break;
+            }
+            //Insert line break...
+            int index;
+            for (index = Math.min(line.length() - 1, MAX_WIDTH); index > QUALIFIER_INDENT; index--) {
+                if (' ' == line.charAt(index)) {
+                    break;
+                }
+            }
+            if (' ' != line.charAt(index)) {
+                //no nice place to break...
+                index = MAX_WIDTH;
+            }
+            assert index <= MAX_WIDTH;
+            goodlines += line.substring(0, index) + lineSep;
+            line = QUALIFIER_INDENT_STR + line.substring(index).replaceAll("^\\s+", "");
+        }
+        return goodlines;
     }
 }
