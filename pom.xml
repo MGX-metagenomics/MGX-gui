@@ -15,7 +15,7 @@
     </scm>
     
     <properties>
-        <netbeans.version>RELEASE210</netbeans.version>
+        <netbeans.version>RELEASE220</netbeans.version>
         <brandingToken>mgx_gui</brandingToken>
     </properties>
 
@@ -179,6 +179,9 @@
                 <artifactId>commons-logging</artifactId>
                 <version>1.2</version>
             </dependency>
+            
+            <!--
+            I don't remember why these might be needed, disable for now..
             <dependency>
                 <groupId>org.apache.servicemix.bundles</groupId>
                 <artifactId>org.apache.servicemix.bundles.commons-httpclient</artifactId>
@@ -189,6 +192,8 @@
                 <artifactId>commons-httpclient</artifactId>
                 <version>3.1</version>
             </dependency>
+            -->
+            
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
